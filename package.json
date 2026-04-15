@@ -4,19 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "server": "node server.js",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@cloudinary/url-gen": "^1.22.0",
     "@cloudinary/vue": "^1.13.4",
-    "@googleapis/sheets": "^9.8.0",
-    "cors": "^2.8.6",
-    "dotenv": "^16.0.0",
-    "express": "^4.22.1",
-    "google-auth-library": "^9.15.1",
-    "googleapis": "^171.4.0",
     "vue": "^3.2.0"
   },
   "devDependencies": {
