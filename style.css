@@ -1,0 +1,39 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#app {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+/* Hide scrollbar on desktop, show on mobile */
+@media (min-width: 768px) {
+  .hide-scrollbar-desktop {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .hide-scrollbar-desktop::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+}
+
+/* Header e Footer classes */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(91, 63, 72, 0.06);
+  padding: 1rem 1.5rem;
+}
+
+.app-footer {
+  margin-top: auto;
+  padding: 3rem 2rem;
+  width: 100%;
+}

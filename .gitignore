@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+gcloud/
+*.log
+.DS_Store
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.netlify/functions-internal/
+.netlify/cache/
+.cache/
+perfumin-key.json
