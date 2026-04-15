@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { google } from '@googleapis/sheets';
 
 export const handler = async (event, context) => {
   try {
@@ -14,7 +14,7 @@ export const handler = async (event, context) => {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: 'Sheet1!A1:E100',
+      range: 'Dados!A1:E100',
     });
 
     const rows = response.data.values || [];
