@@ -1,11 +1,24 @@
 <template>
   <div class="w-full max-w-screen-xl px-8 mx-auto">
-    <header :class="theme === 'white' ? 'bg-[#f3f3f3]' : 'bg-[#0a0c10]'" class="app-header mb-6">
-      <div class="flex justify-between items-center px-6 py-4 w-full max-w-screen-xl mx-auto">
+    <header
+      :class="theme === 'white' ? 'bg-[#f3f3f3]' : 'bg-[#0a0c10]'"
+      class="app-header mb-6"
+    >
+      <div
+        class="flex justify-between items-center px-6 py-4 w-full max-w-screen-xl mx-auto"
+      >
         <div class="flex flex-col leading-none">
-            <span :class="theme==='white' ? 'text-amber-600' : 'text-pink-600'" class="font-headline text-2xl md:text-4xl lg:text-5xl tracking-wider uppercase">B&S</span>
-            <span :class="theme==='white' ? 'text-amber-600' : 'text-pink-600'" class="text-sm md:text-base tracking-wider uppercase">BEAUTY</span>
-          </div>
+          <span
+            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-600'"
+            class="font-headline text-2xl md:text-4xl lg:text-5xl tracking-wider uppercase"
+            >B&S</span
+          >
+          <span
+            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-600'"
+            class="text-sm md:text-base tracking-wider uppercase"
+            >BEAUTY</span
+          >
+        </div>
         <div class="flex items-center gap-4">
           <button
             @click="$emit('open-catalog')"
@@ -20,7 +33,11 @@
           </button>
           <button
             @click="toggleTheme"
-            :class="theme === 'white' ? 'bg-amber-100 text-amber-700' : 'bg-pink-900/40 text-pink-300'"
+            :class="
+              theme === 'white'
+                ? 'bg-amber-100 text-amber-700'
+                : 'bg-pink-900/40 text-pink-300'
+            "
             class="p-3 rounded-full shadow transition-colors"
           >
             <span class="material-symbols-outlined text-lg">{{
@@ -61,8 +78,16 @@
           </div>
         </div>
         <div class="w-full md:w-auto flex justify-center md:justify-end">
-          <div class="w-96 h-80 md:w-[450px] md:h-80 rounded-lg overflow-hidden">
-            <img :src="luxuryUrl" :srcset="luxurySrcset" :sizes="imgSizes" alt="Luxury Perfumes" class="w-full h-full object-cover" />
+          <div
+            class="w-96 h-80 md:w-[450px] md:h-80 rounded-lg overflow-hidden"
+          >
+            <img
+              :src="luxuryUrl"
+              :srcset="luxurySrcset"
+              :sizes="imgSizes"
+              alt="Luxury Perfumes"
+              class="w-full h-full object-cover"
+            />
           </div>
         </div>
       </div>
@@ -216,7 +241,13 @@
               : 'md:col-span-7 rounded-3xl overflow-hidden min-h-[300px] relative group bg-[#071028]'
           "
         >
-        <img :src="cocoUrl" :srcset="cocoSrcset" :sizes="imgSizes" alt="Coco Chanel" class="w-full h-full object-cover" />
+          <img
+            :src="cocoUrl"
+            :srcset="cocoSrcset"
+            :sizes="imgSizes"
+            alt="Coco Chanel"
+            class="w-full h-full object-cover"
+          />
         </div>
         <div class="md:col-span-5 flex flex-col gap-6">
           <div
@@ -234,112 +265,191 @@
               — Coco Chanel
             </p>
           </div>
-          <div
-            class="flex-1 bg-secondary-container rounded-3xl p-6 flex flex-col justify-center relative overflow-hidden"
-          >
-            <div class="relative z-10">
-              <h4
-                class="font-headline text-2xl text-on-secondary-container mb-2"
-              >
-                Discovery Set
-              </h4>
-              <p class="text-on-secondary-fixed-variant mb-4">
-                Ainda em dúvida? Peça nosso kit de amostras exclusivo.
-              </p>
-              <button
-                class="text-on-secondary-container font-bold border-b border-on-secondary-container py-1 hover:opacity-70 transition-opacity"
-              >
-                QUERO CONHECER
-              </button>
-            </div>
-            <span
-              class="material-symbols-outlined text-on-secondary-container/10 text-7xl absolute -right-6 -bottom-6"
-              >inventory_2</span
-            >
-          </div>
         </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer :class="theme==='white' ? 'bg-[#f3f3f3]' : 'bg-[#0a0c10]'" class="app-footer flex flex-col items-center gap-8">
-      <h3 :class="theme==='white' ? 'text-amber-600' : 'text-pink-600'" class="font-headline text-2xl tracking-wider uppercase">Nossos Contatos</h3>
+    <footer
+      :class="theme === 'white' ? 'bg-[#f3f3f3]' : 'bg-[#0a0c10]'"
+      class="app-footer flex flex-col items-center gap-8"
+    >
+      <h3
+        :class="theme === 'white' ? 'text-amber-600' : 'text-pink-600'"
+        class="font-headline text-2xl tracking-wider uppercase"
+      >
+        Nossos Contatos
+      </h3>
       <div class="grid grid-cols-2 gap-4 w-full max-w-sm">
-        <a href="https://wa.me/5511947758048?text=Oi,%20teste" target="_blank" class="flex flex-col items-center gap-2 p-3 rounded-lg" :class="theme==='white' ? 'bg-white hover:bg-amber-50' : 'bg-[#1a1f2a] hover:bg-pink-900/30'">
-          <span :class="theme==='white' ? 'text-amber-600' : 'text-pink-400'" class="material-symbols-outlined">call</span>
-          <p :class="theme==='white' ? 'text-amber-600' : 'text-pink-300'" class="text-xs font-semibold text-center">Sarah</p>
-          <p :class="theme==='white' ? 'text-amber-700' : 'text-pink-200'" class="text-xs text-center">(11) 94775-8048</p>
+        <a
+          :href="whatsappSarah"
+          target="_blank"
+          class="flex flex-col items-center gap-2 p-3 rounded-lg"
+          :class="
+            theme === 'white'
+              ? 'bg-white hover:bg-amber-50'
+              : 'bg-[#1a1f2a] hover:bg-pink-900/30'
+          "
+        >
+          <span
+            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-400'"
+            class="material-symbols-outlined"
+            >call</span
+          >
+          <p
+            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
+            class="text-xs font-semibold text-center"
+          >
+            Sarah
+          </p>
+          <p
+            :class="theme === 'white' ? 'text-amber-700' : 'text-pink-200'"
+            class="text-xs text-center"
+          >
+            (11) 94775-8048
+          </p>
         </a>
-        <a href="https://wa.me/5511970489098?text=Oi,%20teste" target="_blank" class="flex flex-col items-center gap-2 p-3 rounded-lg" :class="theme==='white' ? 'bg-white hover:bg-amber-50' : 'bg-[#1a1f2a] hover:bg-pink-900/30'">
-          <span :class="theme==='white' ? 'text-amber-600' : 'text-pink-400'" class="material-symbols-outlined">call</span>
-          <p :class="theme==='white' ? 'text-amber-600' : 'text-pink-300'" class="text-xs font-semibold text-center">Bruna</p>
-          <p :class="theme==='white' ? 'text-amber-700' : 'text-pink-200'" class="text-xs text-center">(11) 97048-9098</p>
+        <a
+          :href="whatsappBruna"
+          target="_blank"
+          class="flex flex-col items-center gap-2 p-3 rounded-lg"
+          :class="
+            theme === 'white'
+              ? 'bg-white hover:bg-amber-50'
+              : 'bg-[#1a1f2a] hover:bg-pink-900/30'
+          "
+        >
+          <span
+            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-400'"
+            class="material-symbols-outlined"
+            >call</span
+          >
+          <p
+            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
+            class="text-xs font-semibold text-center"
+          >
+            Bruna
+          </p>
+          <p
+            :class="theme === 'white' ? 'text-amber-700' : 'text-pink-200'"
+            class="text-xs text-center"
+          >
+            (11) 97048-9098
+          </p>
         </a>
       </div>
       <div class="flex flex-col items-center gap-3 w-full max-w-sm">
-        <h4 :class="theme==='white' ? 'text-amber-600' : 'text-pink-400'" class="text-sm font-semibold uppercase tracking-wider">Redes Sociais</h4>
-        <a href="https://instagram.com/bes_loja" target="_blank" class="flex items-center gap-2 p-3 rounded-lg w-full justify-center" :class="theme==='white' ? 'bg-white hover:bg-amber-50' : 'bg-[#1a1f2a] hover:bg-pink-900/30'">
-          <span :class="theme==='white' ? 'text-amber-600' : 'text-pink-400'" class="material-symbols-outlined">people</span>
-          <p :class="theme==='white' ? 'text-amber-600' : 'text-pink-300'" class="text-sm">@bes_loja</p>
+        <h4
+          :class="theme === 'white' ? 'text-amber-600' : 'text-pink-400'"
+          class="text-sm font-semibold uppercase tracking-wider"
+        >
+          Redes Sociais
+        </h4>
+        <a
+          href="https://instagram.com/bes_loja"
+          target="_blank"
+          class="flex items-center gap-2 p-3 rounded-lg w-full justify-center"
+          :class="
+            theme === 'white'
+              ? 'bg-white hover:bg-amber-50'
+              : 'bg-[#1a1f2a] hover:bg-pink-900/30'
+          "
+        >
+          <span
+            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-400'"
+            class="material-symbols-outlined"
+            >people</span
+          >
+          <p
+            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
+            class="text-sm"
+          >
+            @bes_loja
+          </p>
         </a>
       </div>
       <div class="flex flex-col items-center gap-3 w-full max-w-sm">
-        <h4 :class="theme==='white' ? 'text-amber-600' : 'text-pink-400'" class="text-sm font-semibold uppercase tracking-wider">Atendemos em</h4>
-        <div class="flex items-center gap-2 p-3 rounded-lg w-full justify-center" :class="theme==='white' ? 'bg-white' : 'bg-[#1a1f2a]'">
-          <span :class="theme==='white' ? 'text-amber-600' : 'text-pink-400'" class="material-symbols-outlined">location_on</span>
-          <p :class="theme==='white' ? 'text-amber-600' : 'text-pink-300'" class="text-sm">São Paulo</p>
+        <h4
+          :class="theme === 'white' ? 'text-amber-600' : 'text-pink-400'"
+          class="text-sm font-semibold uppercase tracking-wider"
+        >
+          Atendemos em
+        </h4>
+        <div
+          class="flex items-center gap-2 p-3 rounded-lg w-full justify-center"
+          :class="theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]'"
+        >
+          <span
+            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-400'"
+            class="material-symbols-outlined"
+            >location_on</span
+          >
+          <p
+            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
+            class="text-sm"
+          >
+            São Paulo
+          </p>
         </div>
       </div>
-      <div class="w-full h-[1px] max-w-screen-xl" :class="theme==='white' ? 'bg-gray-300' : 'bg-gray-700'"></div>
-      <p :class="theme==='white' ? 'text-gray-600' : 'text-gray-400'" class="font-sans text-[10px] tracking-widest uppercase">© 2024 B&S BEAUTY. All rights reserved.</p>
+      <div
+        class="w-full h-[1px] max-w-screen-xl"
+        :class="theme === 'white' ? 'bg-gray-300' : 'bg-gray-700'"
+      ></div>
+      <p
+        :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
+        class="font-sans text-[10px] tracking-widest uppercase"
+      >
+        © 2024 B&S BEAUTY. All rights reserved.
+      </p>
     </footer>
-
-
   </div>
 </template>
 
 <script setup>
-import { inject, computed } from 'vue'
-import { Cloudinary } from '@cloudinary/url-gen'
-import { scale } from '@cloudinary/url-gen/actions/resize'
+import { inject, computed } from 'vue';
+import { Cloudinary } from '@cloudinary/url-gen';
+import { scale } from '@cloudinary/url-gen/actions/resize';
 
-const emit = defineEmits(['open-catalog'])
-const theme = inject('theme')
-const toggleTheme = inject('toggleTheme')
+const emit = defineEmits(['open-catalog']);
+const theme = inject('theme');
+const toggleTheme = inject('toggleTheme');
 
 // Cloudinary setup
-const CLOUD_NAME = 'dvnr5vroo'
-const cld = new Cloudinary({ cloud: { cloudName: CLOUD_NAME } })
+const CLOUD_NAME = 'dvnr5vroo';
+const cld = new Cloudinary({ cloud: { cloudName: CLOUD_NAME } });
 
-function buildImageUrl(publicId, width){
-  return cld.image(publicId)
+function buildImageUrl(publicId, width) {
+  return cld
+    .image(publicId)
     .resize(scale().width(width))
     .format('auto')
     .quality('auto')
-    .toURL()
+    .toURL();
 }
 
 // Images srcset
-const imgWidths = [400, 600, 800, 1200]
-const imgSizes = '(max-width:768px) 100vw, 50vw'
+const imgWidths = [400, 600, 800, 1200];
+const imgSizes = '(max-width:768px) 100vw, 50vw';
 
-const cocoUrl = computed(() => buildImageUrl('coco_chanel_home', 800))
-const cocoSrcset = computed(() => imgWidths.map(w => `${buildImageUrl('coco_chanel_home', w)} ${w}w`).join(', '))
+const cocoUrl = computed(() => buildImageUrl('coco_chanel_home', 800));
+const cocoSrcset = computed(() =>
+  imgWidths
+    .map((w) => `${buildImageUrl('coco_chanel_home', w)} ${w}w`)
+    .join(', '),
+);
 
-const luxuryUrl = computed(() => buildImageUrl('luxury_perfumes', 800))
-const luxurySrcset = computed(() => imgWidths.map(w => `${buildImageUrl('luxury_perfumes', w)} ${w}w`).join(', '))
+const luxuryUrl = computed(() => buildImageUrl('luxury_perfumes', 800));
+const luxurySrcset = computed(() =>
+  imgWidths
+    .map((w) => `${buildImageUrl('luxury_perfumes', w)} ${w}w`)
+    .join(', '),
+);
 
-// WhatsApp link for testing
-const whatsappPhone = '5511970242465'
-const whatsappMsg = encodeURIComponent('Oi, teste')
-const whatsappHref = `https://wa.me/${whatsappPhone}?text=${whatsappMsg}`
-
-function openWhatsapp(){
-  try{
-    const w = window.open(whatsappHref, '_blank')
-    if(w) w.opener = null
-  }catch(e){
-    window.location.href = whatsappHref
-  }
-}
+// WhatsApp links
+const whatsappMsg = encodeURIComponent(
+  'Oi, eu vi seus produtos no site e tenho interesse.',
+);
+const whatsappSarah = `https://wa.me/5511947758048?text=${whatsappMsg}`;
+const whatsappBruna = `https://wa.me/5511970489098?text=${whatsappMsg}`;
 </script>

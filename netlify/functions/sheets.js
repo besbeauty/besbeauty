@@ -1,5 +1,14 @@
 import jwt from 'jsonwebtoken'
 
+const CLOUD_NAME = 'dvnr5vroo'
+
+function buildImageUrl(publicId) {
+  if (!publicId) {
+    return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23e5e7eb" width="300" height="300"/%3E%3C/svg%3E'
+  }
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_300/f_auto/q_auto/${publicId}`
+}
+
 export const handler = async (event, context) => {
   try {
     const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS)
@@ -31,7 +40,7 @@ export const handler = async (event, context) => {
 
     // Busca dados da planilha
     const sheetResponse = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Dados!A1:E100`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Dados!A1:J100`,
       { headers: { Authorization: `Bearer ${tokenData.access_token}` } }
     )
 
@@ -39,11 +48,16 @@ export const handler = async (event, context) => {
     const rows = sheetData.values || []
     const data = rows.slice(1).map((row) => ({
       id: Math.random(),
-      nome: row[0],
-      preco: parseFloat(row[1]),
-      genero: row[2],
-      destaque: row[3]?.toLowerCase() === 'sim',
-      image: row[4]
+      tipo: row[0]?.trim() || '',
+      categoria: row[1]?.trim() || '',
+      genero: row[2]?.trim() || '',
+      codigo: row[3]?.trim() || '',
+      nome: row[4]?.trim() || '',
+      ml: row[5]?.trim() || '',
+      preco: parseFloat(row[6]?.toString().replace('R$', '').replace(',', '.')) || 0,
+      quantidade: parseInt(row[7]) || 0,
+      destaque: row[8]?.trim().toLowerCase() === 'sim',
+      image: buildImageUrl(row[9]?.trim())
     }))
 
     return {

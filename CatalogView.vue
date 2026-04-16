@@ -1,7 +1,7 @@
 <template>
   <div class="w-full max-w-screen-xl px-4 sm:px-8 mx-auto">
     <header
-      class="app-header mb-6"
+      class="app-header mb-6 -mx-4 sm:-mx-8 px-4 sm:px-8"
       :class="theme === 'white' ? 'bg-[#f3f3f3]' : 'bg-[#0a0c10]'"
     >
       <div class="flex justify-between items-center px-6 py-4">
@@ -41,53 +41,23 @@
       </div>
     </header>
 
-    <section v-for="(list, idx) in lists" :key="idx" class="mb-12">
+    <section v-for="(list, idx) in lists" :key="idx" class="mb-12 px-4 sm:px-0">
       <h3
         :class="theme === 'white' ? 'text-amber-600' : 'text-pink-600'"
-        class="text-2xl font-semibold mb-6"
+        class="text-2xl font-semibold mb-6 text-center"
       >
         {{ list.title }}
       </h3>
 
       <div class="relative">
-        <!-- Left arrow -->
-        <div
-          class="absolute left-0 top-1/2 -translate-y-1/2 hidden md:flex z-20"
-        >
-          <button
-            @click="scroll(idx, -1)"
-            class="p-3 rounded-full"
-            :class="
-              theme === 'white'
-                ? 'bg-amber-100 text-amber-700'
-                : 'bg-pink-900/40 text-pink-300'
-            "
-          >
-            <span class="material-symbols-outlined">chevron_left</span>
-          </button>
-        </div>
-
-        <!-- Right arrow -->
-        <div
-          class="absolute right-0 top-1/2 -translate-y-1/2 hidden md:flex z-20"
-        >
-          <button
-            @click="scroll(idx, 1)"
-            class="p-3 rounded-full"
-            :class="
-              theme === 'white'
-                ? 'bg-amber-100 text-amber-700'
-                : 'bg-pink-900/40 text-pink-300'
-            "
-          >
-            <span class="material-symbols-outlined">chevron_right</span>
-          </button>
-        </div>
-
         <!-- Carousel -->
         <div
           :ref="(el) => setContainer(el, idx)"
-          class="flex gap-4 overflow-x-auto py-4 hide-scrollbar-desktop md:justify-center px-12"
+          class="flex gap-4 overflow-x-auto py-4 hide-scrollbar-desktop px-4 cursor-grab active:cursor-grabbing"
+          @mousedown="startDrag"
+          @mousemove="onDrag"
+          @mouseup="endDrag"
+          @mouseleave="endDrag"
         >
           <div
             v-for="item in list.items"
@@ -111,16 +81,18 @@
                 <!-- Destaque star -->
                 <div
                   v-if="item.destaque"
-                  class="absolute top-2 right-2 bg-yellow-400 rounded-full p-1"
+                  :class="theme === 'white' ? 'bg-amber-300' : 'bg-pink-500'"
+                  class="absolute top-2 right-2 rounded-full p-1"
                 >
                   <span
-                    class="material-symbols-outlined text-yellow-900 text-sm"
+                    :class="theme === 'white' ? 'text-amber-900' : 'text-white'"
+                    class="material-symbols-outlined text-sm"
                     >star</span
                   >
                 </div>
               </div>
-              <!-- Info -->
-              <div class="flex-1 p-4 flex flex-col justify-between">
+              <!-- Info + Details button -->
+              <div class="flex-1 p-4 flex flex-col justify-between relative">
                 <div>
                   <h4
                     :class="theme === 'white' ? 'text-black' : 'text-white'"
@@ -130,6 +102,14 @@
                   </h4>
                   <p
                     :class="
+                      theme === 'white' ? 'text-amber-600' : 'text-pink-300'
+                    "
+                    class="text-xs font-semibold mt-1"
+                  >
+                    {{ item.tipo }} • {{ item.categoria }}
+                  </p>
+                  <p
+                    :class="
                       theme === 'white' ? 'text-gray-600' : 'text-gray-400'
                     "
                     class="text-xs capitalize mt-1"
@@ -137,14 +117,24 @@
                     {{ item.genero }}
                   </p>
                 </div>
-                <p
-                  :class="
-                    theme === 'white' ? 'text-amber-600' : 'text-pink-300'
-                  "
-                  class="text-lg font-bold"
-                >
-                  R$ {{ item.preco.toFixed(2).replace('.', ',') }}
-                </p>
+                <div class="flex items-end justify-between">
+                  <p
+                    :class="
+                      theme === 'white' ? 'text-amber-600' : 'text-pink-300'
+                    "
+                    class="text-lg font-bold"
+                  >
+                    R$ {{ item.preco.toFixed(2).replace('.', ',') }}
+                  </p>
+                  <button
+                    @click.stop="selectedProduct = item"
+                    :class="theme === 'white' ? 'text-amber-600 hover:text-amber-700' : 'text-pink-300 hover:text-pink-400'"
+                    class="p-1"
+                    title="Ver detalhes"
+                  >
+                    <span class="material-symbols-outlined text-lg">info</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -168,16 +158,41 @@
     </div>
 
     <!-- Error Modal -->
-    <div v-if="showError" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div :class="theme==='white' ? 'bg-white' : 'bg-[#1a1f2a]'" class="rounded-xl p-6 w-full max-w-sm">
+    <div
+      v-if="showError"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+    >
+      <div
+        :class="theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]'"
+        class="rounded-xl p-6 w-full max-w-sm"
+      >
         <div class="flex items-center gap-3 mb-4">
-          <span class="material-symbols-outlined text-2xl text-red-500">error</span>
-          <h2 :class="theme==='white' ? 'text-black' : 'text-white'" class="text-lg font-bold">Erro desconhecido</h2>
+          <span class="material-symbols-outlined text-2xl text-red-500"
+            >error</span
+          >
+          <h2
+            :class="theme === 'white' ? 'text-black' : 'text-white'"
+            class="text-lg font-bold"
+          >
+            Erro desconhecido
+          </h2>
         </div>
-        <p :class="theme==='white' ? 'text-gray-600' : 'text-gray-400'" class="mb-6">
-          Não conseguimos carregar os produtos. Verifique o console para mais detalhes.
+        <p
+          :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
+          class="mb-6"
+        >
+          Não conseguimos carregar os produtos. Verifique o console para mais
+          detalhes.
         </p>
-        <button @click="showError = false" :class="theme==='white' ? 'w-full px-4 py-2 bg-amber-200 text-amber-900 rounded-full' : 'w-full px-4 py-2 bg-pink-600 text-black rounded-full'" class="font-semibold">
+        <button
+          @click="showError = false"
+          :class="
+            theme === 'white'
+              ? 'w-full px-4 py-2 bg-amber-200 text-amber-900 rounded-full'
+              : 'w-full px-4 py-2 bg-pink-600 text-black rounded-full'
+          "
+          class="font-semibold"
+        >
           Fechar
         </button>
       </div>
@@ -359,6 +374,93 @@
           </label>
         </div>
 
+        <!-- Tipo Filter -->
+        <div class="mb-6">
+          <label
+            :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+            class="block text-sm font-semibold mb-3"
+            >Tipo</label
+          >
+          <select
+            v-model="filterTipo"
+            :class="
+              theme === 'white'
+                ? 'bg-gray-50 text-black border-gray-300'
+                : 'bg-[#0a0c10] text-white border-gray-600'
+            "
+            class="w-full px-3 py-2 border rounded text-sm"
+          >
+            <option value="">Todos</option>
+            <option
+              v-for="tipo in [
+                ...new Set(allProducts.map((p) => p.tipo).filter(Boolean)),
+              ]"
+              :key="tipo"
+              :value="tipo"
+            >
+              {{ tipo }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Categoria Filter -->
+        <div class="mb-6">
+          <label
+            :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+            class="block text-sm font-semibold mb-3"
+            >Categoria</label
+          >
+          <select
+            v-model="filterCategoria"
+            :class="
+              theme === 'white'
+                ? 'bg-gray-50 text-black border-gray-300'
+                : 'bg-[#0a0c10] text-white border-gray-600'
+            "
+            class="w-full px-3 py-2 border rounded text-sm"
+          >
+            <option value="">Todos</option>
+            <option
+              v-for="cat in [
+                ...new Set(allProducts.map((p) => p.categoria).filter(Boolean)),
+              ]"
+              :key="cat"
+              :value="cat"
+            >
+              {{ cat }}
+            </option>
+          </select>
+        </div>
+
+        <!-- ML Filter -->
+        <div class="mb-6">
+          <label
+            :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+            class="block text-sm font-semibold mb-3"
+            >ML</label
+          >
+          <select
+            v-model="filterML"
+            :class="
+              theme === 'white'
+                ? 'bg-gray-50 text-black border-gray-300'
+                : 'bg-[#0a0c10] text-white border-gray-600'
+            "
+            class="w-full px-3 py-2 border rounded text-sm"
+          >
+            <option value="">Todos</option>
+            <option
+              v-for="ml in [
+                ...new Set(allProducts.map((p) => p.ml).filter(Boolean)),
+              ]"
+              :key="ml"
+              :value="ml"
+            >
+              {{ ml }}
+            </option>
+          </select>
+        </div>
+
         <!-- Results -->
         <div class="mb-6">
           <div
@@ -379,7 +481,8 @@
           >
             <div
               :class="theme === 'white' ? 'bg-gray-200' : 'bg-gray-700'"
-              class="w-full h-20 rounded mb-2 overflow-hidden"
+              class="w-full h-20 rounded mb-2 overflow-hidden cursor-pointer"
+              @click="selectedProduct = item"
             >
               <img
                 :src="item.image"
@@ -393,6 +496,12 @@
             >
               {{ item.nome }}
             </h4>
+            <p
+              :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
+              class="text-xs"
+            >
+              {{ item.tipo }} • {{ item.categoria }}
+            </p>
             <p
               :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
               class="text-xs capitalize"
@@ -444,58 +553,125 @@
         </div>
       </div>
     </div>
+
+    <!-- Product Details Modal -->
+    <div
+      v-if="selectedProduct"
+      @click="selectedProduct = null"
+      :class="theme === 'white' ? 'bg-black/50' : 'bg-black/70'"
+      class="fixed inset-0 flex items-center justify-center z-50 p-4"
+    >
+      <div
+        @click.stop
+        :class="theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]'"
+        class="rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+      >
+        <!-- Image -->
+        <div class="w-full h-64 overflow-hidden">
+          <img
+            :src="selectedProduct.image"
+            alt=""
+            class="w-full h-full object-cover"
+          />
+        </div>
+
+        <!-- Content -->
+        <div class="p-6">
+          <h2
+            :class="theme === 'white' ? 'text-black' : 'text-white'"
+            class="text-2xl font-semibold mb-2"
+          >
+            {{ selectedProduct.nome }}
+          </h2>
+
+          <div
+            :class="
+              theme === 'white' ? 'text-gray-600' : 'text-gray-400'
+            "
+            class="text-sm mb-4 space-y-1"
+          >
+            <p><strong>Tipo:</strong> {{ selectedProduct.tipo }}</p>
+            <p><strong>Categoria:</strong> {{ selectedProduct.categoria }}</p>
+            <p><strong>Gênero:</strong> {{ selectedProduct.genero }}</p>
+          </div>
+
+          <div class="border-t border-b py-4 mb-4" :class="theme === 'white' ? 'border-gray-300' : 'border-gray-600'">
+            <div class="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <p :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'" class="text-xs">Código</p>
+                <p :class="theme === 'white' ? 'text-black' : 'text-white'" class="font-semibold">{{ selectedProduct.codigo }}</p>
+              </div>
+              <div>
+                <p :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'" class="text-xs">ML</p>
+                <p :class="theme === 'white' ? 'text-black' : 'text-white'" class="font-semibold">{{ selectedProduct.ml }}</p>
+              </div>
+              <div>
+                <p :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'" class="text-xs">Quantidade</p>
+                <p :class="theme === 'white' ? 'text-black' : 'text-white'" class="font-semibold">{{ selectedProduct.quantidade }}</p>
+              </div>
+            </div>
+          </div>
+
+          <p
+            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
+            class="text-3xl font-bold mb-6"
+          >
+            R$ {{ selectedProduct.preco.toFixed(2).replace('.', ',') }}
+          </p>
+
+          <button
+            @click="selectedProduct = null"
+            :class="
+              theme === 'white'
+                ? 'w-full px-4 py-3 bg-amber-200 text-amber-900 rounded-full'
+                : 'w-full px-4 py-3 bg-pink-600 text-black rounded-full'
+            "
+            class="font-semibold"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, inject, computed, onMounted } from 'vue';
-import { Cloudinary } from '@cloudinary/url-gen';
-import { scale } from '@cloudinary/url-gen/actions/resize';
 
 const emit = defineEmits(['back']);
 const theme = inject('theme');
 const toggleTheme = inject('toggleTheme');
 
-// Cloudinary setup
-const CLOUD_NAME = 'dvnr5vroo';
-const cld = new Cloudinary({ cloud: { cloudName: CLOUD_NAME } });
-
-function buildImageUrl(publicId, width) {
-  return cld
-    .image(publicId)
-    .resize(scale().width(width))
-    .format('auto')
-    .quality('auto')
-    .toURL();
-}
-
 // All products data
 const allProducts = ref([]);
+const selectedProduct = ref(null);
 
 // Home page lists
-const lists = computed(() => [
-  {
-    title: 'Em destaque',
-    items: allProducts.value.filter((p) => p.destaque),
-  },
-  {
-    title: 'Masculino',
-    items: allProducts.value.filter((p) => p.genero === 'masculino'),
-  },
-  {
-    title: 'Feminino',
-    items: allProducts.value.filter((p) => p.genero === 'feminino'),
-  },
-]);
+const lists = computed(() => {
+  const tipos = [
+    ...new Set(allProducts.value.map((p) => p.tipo).filter(Boolean)),
+  ];
+  return tipos
+    .map((tipo) => ({
+      title: tipo,
+      items: allProducts.value.filter((p) => p.tipo === tipo && p.destaque),
+    }))
+    .filter((list) => list.items.length > 0);
+});
 
 // Filter state
 const showFilters = ref(false);
+const showError = ref(false);
 const searchQuery = ref('');
 const priceMin = ref(0);
 const priceMax = ref(500);
 const filterFeminino = ref(false);
 const filterMasculino = ref(false);
 const filterDestaque = ref(false);
+const filterTipo = ref('');
+const filterCategoria = ref('');
+const filterML = ref('');
 
 const filteredProducts = computed(() => {
   return allProducts.value.filter((p) => {
@@ -510,11 +686,23 @@ const filteredProducts = computed(() => {
     if (p.preco < priceMin.value || p.preco > priceMax.value) return false;
 
     // Gender filters
-    if (filterFeminino.value && p.genero !== 'feminino') return false;
-    if (filterMasculino.value && p.genero !== 'masculino') return false;
+    if (filterFeminino.value && p.genero?.toLowerCase() !== 'feminino')
+      return false;
+    if (filterMasculino.value && p.genero?.toLowerCase() !== 'masculino')
+      return false;
 
     // Destaque filter
     if (filterDestaque.value && !p.destaque) return false;
+
+    // Tipo filter
+    if (filterTipo.value && p.tipo !== filterTipo.value) return false;
+
+    // Categoria filter
+    if (filterCategoria.value && p.categoria !== filterCategoria.value)
+      return false;
+
+    // ML filter
+    if (filterML.value && p.ml !== filterML.value) return false;
 
     return true;
   });
@@ -538,38 +726,58 @@ function setContainer(el, idx) {
   containers.value[idx] = el;
 }
 
-function scroll(idx, dir) {
-  const el = containers.value[idx];
-  if (!el) return;
-  const delta = Math.round(el.clientWidth * 0.7) * dir;
-  el.scrollBy({ left: delta, behavior: 'smooth' });
+// Drag to scroll
+const isDragging = ref(false);
+const dragStart = ref(0);
+const scrollStart = ref(0);
+const dragElement = ref(null);
+
+function startDrag(e) {
+  isDragging.value = true;
+  dragStart.value = e.clientX;
+  scrollStart.value = e.currentTarget.scrollLeft;
+  dragElement.value = e.currentTarget;
+}
+
+function onDrag(e) {
+  if (!isDragging.value || !dragElement.value) return;
+  const delta = e.clientX - dragStart.value;
+  dragElement.value.scrollLeft = scrollStart.value - delta;
+}
+
+function endDrag() {
+  isDragging.value = false;
+  dragElement.value = null;
 }
 
 async function getProducts() {
   try {
-    console.log('Buscando produtos...');
-    const response = await fetch('/.netlify/functions/sheets');
-    console.log('Response:', response.status);
+    const response = await fetch('http://localhost:3001/api/sheets');
     const data = await response.json();
-    console.log('Dados recebidos:', data);
+
+    if (data.error) {
+      throw new Error('Falha ao carregar produtos');
+    }
 
     if (Array.isArray(data)) {
       allProducts.value = data.map((p, i) => ({
         id: i,
-        nome: p.nome,
-        preco: p.preco,
-        genero: p.genero,
-        destaque: p.destaque,
-        image: p.image
-          ? buildImageUrl(p.image, 300)
-          : 'https://via.placeholder.com/300x300?text=Sem+Imagem',
+        tipo: p.tipo || 'Sem tipo',
+        categoria: p.categoria || 'Sem categoria',
+        genero: p.genero || 'Unissexo',
+        codigo: p.codigo || '',
+        nome: p.nome || 'Sem nome',
+        ml: p.ml || '',
+        preco: parseFloat(p.preco) || 0,
+        quantidade: p.quantidade || 0,
+        destaque: p.destaque === 'Sim' || p.destaque === true,
+        image: p.image,
       }));
-      console.log('Produtos carregados:', allProducts.value);
     } else {
-      console.error('Dados não são array:', data);
+      throw new Error('Formato de dados inválido');
     }
   } catch (e) {
-    console.error('Erro ao buscar produtos:', e);
+    showError.value = true;
   }
 }
 
