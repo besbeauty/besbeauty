@@ -167,7 +167,21 @@
       </button>
     </div>
 
-    <!-- Filter Modal -->
+    <!-- Error Modal -->
+    <div v-if="showError" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div :class="theme==='white' ? 'bg-white' : 'bg-[#1a1f2a]'" class="rounded-xl p-6 w-full max-w-sm">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="material-symbols-outlined text-2xl text-red-500">error</span>
+          <h2 :class="theme==='white' ? 'text-black' : 'text-white'" class="text-lg font-bold">Erro desconhecido</h2>
+        </div>
+        <p :class="theme==='white' ? 'text-gray-600' : 'text-gray-400'" class="mb-6">
+          Não conseguimos carregar os produtos. Verifique o console para mais detalhes.
+        </p>
+        <button @click="showError = false" :class="theme==='white' ? 'w-full px-4 py-2 bg-amber-200 text-amber-900 rounded-full' : 'w-full px-4 py-2 bg-pink-600 text-black rounded-full'" class="font-semibold">
+          Fechar
+        </button>
+      </div>
+    </div>
     <div
       v-if="showFilters"
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
