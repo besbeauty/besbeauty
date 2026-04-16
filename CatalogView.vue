@@ -41,7 +41,7 @@
       </div>
     </header>
 
-    <section v-for="(list, idx) in lists" :key="idx" class="mb-12 px-4 sm:px-0">
+    <section v-for="(list, idx) in lists" :key="idx" class="mb-12 px-4 sm:px-0 pb-6" :class="theme === 'white' ? 'border-b border-amber-200' : 'border-b border-pink-900/30'">
       <h3
         :class="theme === 'white' ? 'text-amber-600' : 'text-pink-600'"
         class="text-2xl font-semibold mb-6 text-center"
@@ -53,11 +53,8 @@
         <!-- Carousel -->
         <div
           :ref="(el) => setContainer(el, idx)"
-          class="flex gap-4 overflow-x-auto py-4 hide-scrollbar-desktop px-4 cursor-grab active:cursor-grabbing"
-          @mousedown="startDrag"
-          @mousemove="onDrag"
-          @mouseup="endDrag"
-          @mouseleave="endDrag"
+          class="flex gap-4 overflow-x-auto py-4 px-4 scrollbar-thin"
+          :class="theme === 'white' ? 'scrollbar-amber-300' : 'scrollbar-pink-500'"
         >
           <div
             v-for="item in list.items"
@@ -72,23 +69,20 @@
               "
             >
               <!-- Image container -->
-              <div class="relative w-full h-40 overflow-hidden bg-gray-200">
+              <div class="relative w-full h-40 overflow-hidden bg-gray-200 flex items-center justify-center">
                 <img
+                  v-if="item.image?.trim()"
                   :src="item.image"
                   alt="Perfume"
                   class="w-full h-full object-cover"
                 />
-                <!-- Destaque star -->
-                <div
-                  v-if="item.destaque"
-                  :class="theme === 'white' ? 'bg-amber-300' : 'bg-pink-500'"
-                  class="absolute top-2 right-2 rounded-full p-1"
-                >
-                  <span
-                    :class="theme === 'white' ? 'text-amber-900' : 'text-white'"
-                    class="material-symbols-outlined text-sm"
-                    >star</span
+                <div v-else class="text-center px-4">
+                  <p
+                    :class="theme === 'white' ? 'text-gray-500' : 'text-gray-400'"
+                    class="text-sm font-medium"
                   >
+                    Imagem será disponibilizada em breve
+                  </p>
                 </div>
               </div>
               <!-- Info + Details button -->
@@ -683,17 +677,13 @@ const toggleTheme = inject('toggleTheme');
 const allProducts = ref([]);
 const selectedProduct = ref(null);
 
-// Home page lists
+// Home page lists (categoria-based destaques only)
+const categories = ['Brand Collection', 'Hidratante', 'Arabic Collection', 'Árabes Originais', 'Victoria\'s Secret'];
 const lists = computed(() => {
-  const tipos = [
-    ...new Set(allProducts.value.map((p) => p.tipo).filter(Boolean)),
-  ];
-  return tipos
-    .map((tipo) => ({
-      title: tipo,
-      items: allProducts.value.filter((p) => p.tipo === tipo && p.destaque),
-    }))
-    .filter((list) => list.items.length > 0);
+  return categories.map((categoria) => ({
+    title: categoria,
+    items: allProducts.value.filter((p) => p.categoria === categoria && p.destaque),
+  }));
 });
 
 // Filter state
@@ -815,6 +805,12 @@ async function getProducts() {
         destaque: p.destaque === 'Sim' || p.destaque === true,
         image: p.image,
       }));
+      const categoriasUnicas = [...new Set(allProducts.value.map((p) => p.categoria))];
+      console.log('Categorias únicas na planilha:', categoriasUnicas);
+      console.log('Destaques por categoria:', categories.map((cat) => ({
+        categoria: cat,
+        destaques: allProducts.value.filter((p) => p.categoria === cat && p.destaque).length,
+      })));
     } else {
       throw new Error('Formato de dados inválido');
     }
@@ -828,3 +824,34 @@ onMounted(() => {
   getProducts();
 });
 </script>
+
+<style scoped>
+/* Scrollbar customizado */
+.scrollbar-amber-300::-webkit-scrollbar {
+  height: 4px;
+}
+.scrollbar-amber-300::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-amber-300::-webkit-scrollbar-thumb {
+  background: #fcd34d;
+  border-radius: 2px;
+}
+.scrollbar-amber-300::-webkit-scrollbar-thumb:hover {
+  background: #f59e0b;
+}
+
+.scrollbar-pink-500::-webkit-scrollbar {
+  height: 4px;
+}
+.scrollbar-pink-500::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-pink-500::-webkit-scrollbar-thumb {
+  background: #ec4899;
+  border-radius: 2px;
+}
+.scrollbar-pink-500::-webkit-scrollbar-thumb:hover {
+  background: #db2777;
+}
+</style>

@@ -223,7 +223,7 @@
             >
             <h3 class="font-headline text-2xl mb-2">Receba com Luxo</h3>
             <p class="text-on-surface-variant">
-              Finalize seu pedido com segurança e receba sua caixa Título no
+              Finalize seu pedido com segurança e receba sua caixa B&S Beauty no
               conforto do seu lar.
             </p>
           </div>
@@ -416,7 +416,7 @@ const theme = inject('theme');
 const toggleTheme = inject('toggleTheme');
 
 // Cloudinary setup
-const CLOUD_NAME = 'dvnr5vroo';
+const CLOUD_NAME = 'dsxdphuim';
 const cld = new Cloudinary({ cloud: { cloudName: CLOUD_NAME } });
 
 function buildImageUrl(publicId, width) {
@@ -432,17 +432,17 @@ function buildImageUrl(publicId, width) {
 const imgWidths = [400, 600, 800, 1200];
 const imgSizes = '(max-width:768px) 100vw, 50vw';
 
-const cocoUrl = computed(() => buildImageUrl('coco_chanel_home', 800));
+const cocoUrl = computed(() => buildImageUrl('coco_chanel_vo3pwc', 800));
 const cocoSrcset = computed(() =>
   imgWidths
-    .map((w) => `${buildImageUrl('coco_chanel_home', w)} ${w}w`)
+    .map((w) => `${buildImageUrl('coco_chanel_vo3pwc', w)} ${w}w`)
     .join(', '),
 );
 
-const luxuryUrl = computed(() => buildImageUrl('luxury_perfumes', 800));
+const luxuryUrl = computed(() => buildImageUrl('luxury_perfumes_lknj5c', 800));
 const luxurySrcset = computed(() =>
   imgWidths
-    .map((w) => `${buildImageUrl('luxury_perfumes', w)} ${w}w`)
+    .map((w) => `${buildImageUrl('luxury_perfumes_lknj5c', w)} ${w}w`)
     .join(', '),
 );
 

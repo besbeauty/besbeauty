@@ -8,12 +8,11 @@ const app = express();
 app.use(cors());
 
 const CLOUD_NAME = 'dvnr5vroo';
+const DEFAULT_IMAGE_PUBLIC_ID = 'logo_vhfbsi';
 
 function buildImageUrl(publicId) {
-  if (!publicId) {
-    return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23e5e7eb" width="300" height="300"/%3E%3C/svg%3E';
-  }
-  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_300/f_auto/q_auto/${publicId}`;
+  const imageId = publicId?.trim() || DEFAULT_IMAGE_PUBLIC_ID;
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_300/f_auto/q_auto/${imageId}`;
 }
 
 app.get('/api/sheets', async (req, res) => {
@@ -55,19 +54,33 @@ app.get('/api/sheets', async (req, res) => {
 
     const sheetData = await sheetResponse.json();
     const rows = sheetData.values || [];
-    const data = rows.slice(1).map((row) => ({
-      id: Math.random(),
-      tipo: row[0]?.trim() || '',
-      categoria: row[1]?.trim() || '',
-      genero: row[2]?.trim() || '',
-      codigo: row[3]?.trim() || '',
-      nome: row[4]?.trim() || '',
-      ml: row[5]?.trim() || '',
-      preco: parseFloat(row[6]?.toString().replace('R$', '').replace(',', '.')) || 0,
-      quantidade: parseInt(row[7]) || 0,
-      destaque: row[8]?.trim().toLowerCase() === 'sim',
-      image: buildImageUrl(row[9]?.trim()),
-    }));
+    const data = rows.slice(1).map((row) => {
+      const rawImageId = row[9]?.trim() || '';
+
+      if (!rawImageId) {
+        console.log('[image-fallback]', {
+          codigo: row[3]?.trim() || '',
+          nome: row[4]?.trim() || '',
+          fallback: DEFAULT_IMAGE_PUBLIC_ID,
+        });
+      }
+
+      return {
+        id: Math.random(),
+        tipo: row[0]?.trim() || '',
+        categoria: row[1]?.trim() || '',
+        genero: row[2]?.trim() || '',
+        codigo: row[3]?.trim() || '',
+        nome: row[4]?.trim() || '',
+        ml: row[5]?.trim() || '',
+        preco:
+          parseFloat(row[6]?.toString().replace('R$', '').replace(',', '.')) ||
+          0,
+        quantidade: parseInt(row[7]) || 0,
+        destaque: row[8]?.trim().toLowerCase() === 'sim',
+        image: buildImageUrl(rawImageId),
+      };
+    });
 
     res.json(data);
   } catch (error) {
@@ -77,6 +90,4 @@ app.get('/api/sheets', async (req, res) => {
 });
 
 const PORT = 3001;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
+app.listen(PORT);
