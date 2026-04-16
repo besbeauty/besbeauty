@@ -181,8 +181,7 @@
           :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
           class="mb-6"
         >
-          Não conseguimos carregar os produtos. Verifique o console para mais
-          detalhes.
+          {{ errorMessage || 'Não conseguimos carregar os produtos.' }}
         </p>
         <button
           @click="showError = false"
@@ -665,6 +664,7 @@ const lists = computed(() => {
 // Filter state
 const showFilters = ref(false);
 const showError = ref(false);
+const errorMessage = ref('');
 const searchQuery = ref('');
 const priceMin = ref(0);
 const priceMax = ref(500);
@@ -780,6 +780,7 @@ async function getProducts() {
     }
   } catch (e) {
     showError.value = true;
+    errorMessage.value = e.message || 'Erro desconhecido ao carregar produtos';
   }
 }
 
