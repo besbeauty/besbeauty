@@ -128,7 +128,11 @@
                   </p>
                   <button
                     @click.stop="selectedProduct = item"
-                    :class="theme === 'white' ? 'text-amber-600 hover:text-amber-700' : 'text-pink-300 hover:text-pink-400'"
+                    :class="
+                      theme === 'white'
+                        ? 'text-amber-600 hover:text-amber-700'
+                        : 'text-pink-300 hover:text-pink-400'
+                    "
                     class="p-1"
                     title="Ver detalhes"
                   >
@@ -586,9 +590,7 @@
           </h2>
 
           <div
-            :class="
-              theme === 'white' ? 'text-gray-600' : 'text-gray-400'
-            "
+            :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
             class="text-sm mb-4 space-y-1"
           >
             <p><strong>Tipo:</strong> {{ selectedProduct.tipo }}</p>
@@ -596,19 +598,52 @@
             <p><strong>Gênero:</strong> {{ selectedProduct.genero }}</p>
           </div>
 
-          <div class="border-t border-b py-4 mb-4" :class="theme === 'white' ? 'border-gray-300' : 'border-gray-600'">
+          <div
+            class="border-t border-b py-4 mb-4"
+            :class="theme === 'white' ? 'border-gray-300' : 'border-gray-600'"
+          >
             <div class="grid grid-cols-3 gap-4 text-center">
               <div>
-                <p :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'" class="text-xs">Código</p>
-                <p :class="theme === 'white' ? 'text-black' : 'text-white'" class="font-semibold">{{ selectedProduct.codigo }}</p>
+                <p
+                  :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
+                  class="text-xs"
+                >
+                  Código
+                </p>
+                <p
+                  :class="theme === 'white' ? 'text-black' : 'text-white'"
+                  class="font-semibold"
+                >
+                  {{ selectedProduct.codigo }}
+                </p>
               </div>
               <div>
-                <p :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'" class="text-xs">ML</p>
-                <p :class="theme === 'white' ? 'text-black' : 'text-white'" class="font-semibold">{{ selectedProduct.ml }}</p>
+                <p
+                  :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
+                  class="text-xs"
+                >
+                  ML
+                </p>
+                <p
+                  :class="theme === 'white' ? 'text-black' : 'text-white'"
+                  class="font-semibold"
+                >
+                  {{ selectedProduct.ml }}
+                </p>
               </div>
               <div>
-                <p :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'" class="text-xs">Quantidade</p>
-                <p :class="theme === 'white' ? 'text-black' : 'text-white'" class="font-semibold">{{ selectedProduct.quantidade }}</p>
+                <p
+                  :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
+                  class="text-xs"
+                >
+                  Quantidade
+                </p>
+                <p
+                  :class="theme === 'white' ? 'text-black' : 'text-white'"
+                  class="font-semibold"
+                >
+                  {{ selectedProduct.quantidade }}
+                </p>
               </div>
             </div>
           </div>
@@ -754,11 +789,16 @@ function endDrag() {
 
 async function getProducts() {
   try {
-    const response = await fetch('http://localhost:3001/api/sheets');
+    const response = await fetch('/.netlify/functions/sheets');
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
     const data = await response.json();
 
     if (data.error) {
-      throw new Error('Falha ao carregar produtos');
+      throw new Error(`API: ${data.error}`);
     }
 
     if (Array.isArray(data)) {
