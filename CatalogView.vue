@@ -68,7 +68,7 @@
             <div
               :class="
                 (theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]') +
-                ' rounded-xl shadow-lg overflow-hidden w-48 h-72 flex flex-col transition-transform hover:scale-105'
+                ' rounded-xl shadow-lg overflow-hidden w-auto min-w-48 flex flex-col transition-transform hover:scale-105'
               "
             >
               <!-- Image container -->
@@ -96,7 +96,7 @@
                 <div>
                   <h4
                     :class="theme === 'white' ? 'text-black' : 'text-white'"
-                    class="font-semibold text-sm line-clamp-2"
+                    class="font-semibold text-sm"
                   >
                     {{ item.nome }}
                   </h4>
@@ -200,10 +200,12 @@
     <div
       v-if="showFilters"
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      @click="showFilters = false"
     >
       <div
         :class="theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]'"
-        class="rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+        class="rounded-xl p-6 w-full max-w-md md:max-w-2xl max-h-[90vh] overflow-y-auto"
+        @click.stop
       >
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
