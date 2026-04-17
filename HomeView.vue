@@ -402,12 +402,20 @@
         class="w-full h-[1px] max-w-screen-xl"
         :class="theme === 'white' ? 'bg-gray-300' : 'bg-gray-700'"
       ></div>
-      <p
-        :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
-        class="font-sans text-[10px] tracking-widest uppercase"
-      >
-        © 2024 B&S BEAUTY. All rights reserved.
-      </p>
+      <div class="text-center space-y-2">
+        <p
+          :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+          class="font-sans text-xs tracking-widest uppercase font-semibold"
+        >
+          2026 — Made by -A.
+        </p>
+        <p
+          :class="theme === 'white' ? 'text-gray-500' : 'text-gray-500'"
+          class="font-serif text-[11px] italic"
+        >
+          {{ randomMessage }}
+        </p>
+      </div>
     </footer>
 
     <!-- Contact Name Modal -->
@@ -486,6 +494,39 @@ import { scale } from '@cloudinary/url-gen/actions/resize';
 const emit = defineEmits(['open-catalog']);
 const theme = inject('theme');
 const toggleTheme = inject('toggleTheme');
+
+// Messages for footer
+const messages = [
+  'Hey, bitches.',
+  'Miss me?',
+  'I see everything.',
+  'Secrets have a way of coming out.',
+  'You should be more careful.',
+  'Did you really think no one was watching?',
+  'Some secrets are meant to stay buried.',
+  'Tick tock.',
+  'The truth always finds a way.',
+  'Careful who you trust.',
+  'I know what you did.',
+  'You can\'t hide forever.',
+  'Every move you make... I see it.',
+  'Lying is easy. Getting away with it isn\'t.',
+  'Not everyone is who they seem.',
+  'Do you feel watched yet?',
+  'The game has already begun.',
+  'You\'re closer to the truth than you think.',
+  'But are you ready for it?',
+  'Some puzzles aren\'t meant to be solved.',
+  'Maybe the real question is... who is A?',
+  'XOXO.',
+];
+
+const randomMessage = ref('');
+
+function getRandomMessage() {
+  const index = Math.floor(Math.random() * messages.length);
+  return messages[index];
+}
 
 // Cloudinary setup
 const CLOUD_NAME = 'dsxdphuim';
@@ -571,6 +612,8 @@ onMounted(() => {
   if (savedName) {
     contactName.value = savedName;
   }
+  // Set random message on mount
+  randomMessage.value = getRandomMessage();
 });
 
 // Save name to localStorage when it changes
