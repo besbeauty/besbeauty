@@ -939,7 +939,7 @@
                 :value="cartQuantities[item.id] || 0"
                 @input="updateCartQuantity(item.id, $event.target.value)"
                 type="number"
-                min="0"
+                min="1"
                 :max="isSobConsultaProduct(item) ? 999 : item.quantidade || 999"
                 :class="
                   theme === 'white'
