@@ -3,6 +3,7 @@ name: Deploy from Sheets
 on:
   repository_dispatch:
     types: [deploy]
+  workflow_dispatch:
 
 permissions:
   contents: write
