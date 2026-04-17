@@ -7,7 +7,7 @@ const app = express();
 
 app.use(cors());
 
-const CLOUD_NAME = 'dvnr5vroo';
+const CLOUD_NAME = 'dsxdphuim';
 const DEFAULT_IMAGE_PUBLIC_ID = 'logo_vhfbsi';
 
 function buildImageUrl(publicId) {

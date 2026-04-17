@@ -1,18 +1,36 @@
 <template>
   <div class="w-full min-h-screen overflow-x-hidden">
     <header
-      class="app-header mb-6 px-4 sm:px-8 lg:px-12"
+      class="app-header w-full"
       :class="theme === 'white' ? 'bg-[#f3f3f3]' : 'bg-[#0a0c10]'"
     >
       <div class="flex justify-between items-center px-6 py-4">
-        <div class="flex flex-col leading-none">
+        <!-- Logo -->
+        <img
+          :src="logoUrl"
+          alt="B&S Beauty Logo"
+          class="h-20 w-20 object-contain cursor-pointer transition-opacity hover:opacity-80"
+          @click="$emit('back')"
+        />
+
+        <!-- Center Title -->
+        <div class="flex flex-col items-center leading-none">
           <span
             :class="theme === 'white' ? 'text-amber-600' : 'text-pink-600'"
-            class="font-headline text-2xl md:text-4xl lg:text-5xl tracking-wider uppercase"
-            >Catálogo</span
+            class="font-headline text-xs md:text-sm tracking-wider uppercase"
           >
+            B&S Beauty
+          </span>
+          <span
+            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-600'"
+            class="font-headline text-lg md:text-2xl lg:text-3xl tracking-wider uppercase"
+          >
+            Catálogo
+          </span>
         </div>
-        <div class="flex items-center gap-2">
+
+        <!-- Right Buttons -->
+        <div class="flex items-center gap-4">
           <button
             @click="$emit('back')"
             class="p-3 rounded-full"
@@ -41,14 +59,113 @@
       </div>
     </header>
 
+    <!-- Skeleton Loading LinkedIn style -->
+    <div v-if="isLoadingProducts" class="mb-12 px-4 sm:px-8 lg:px-12 pb-6 pt-8">
+      <div
+        :class="
+          theme === 'white'
+            ? 'bg-gradient-to-r from-amber-100 to-amber-200'
+            : 'bg-gradient-to-r from-pink-900/30 to-pink-800/40'
+        "
+        class="h-8 w-40 rounded mx-auto mb-6 animate-pulse"
+      />
+
+      <div class="relative">
+        <div class="flex gap-4 overflow-x-auto py-4 px-4">
+          <div v-for="i in 4" :key="`skeleton-${i}`" class="flex-shrink-0">
+            <div
+              :class="
+                (theme === 'white'
+                  ? 'bg-gradient-to-br from-amber-50 to-amber-100'
+                  : 'bg-gradient-to-br from-pink-900/20 to-pink-800/30') +
+                ' rounded-xl shadow-lg overflow-hidden w-auto min-w-48 flex flex-col'
+              "
+            >
+              <!-- Skeleton Image -->
+              <div
+                :class="
+                  theme === 'white'
+                    ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                    : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                "
+                class="w-full h-40 animate-pulse"
+              />
+
+              <!-- Skeleton Content -->
+              <div class="flex-1 p-4 flex flex-col justify-between">
+                <div class="space-y-3">
+                  <div
+                    :class="
+                      theme === 'white'
+                        ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                        : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                    "
+                    class="h-4 w-3/4 rounded animate-pulse"
+                  />
+                  <div
+                    :class="
+                      theme === 'white'
+                        ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                        : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                    "
+                    class="h-3 w-1/2 rounded animate-pulse"
+                  />
+                  <div
+                    :class="
+                      theme === 'white'
+                        ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                        : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                    "
+                    class="h-3 w-2/3 rounded animate-pulse"
+                  />
+                </div>
+
+                <div class="flex items-end justify-between mt-4">
+                  <div
+                    :class="
+                      theme === 'white'
+                        ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                        : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                    "
+                    class="h-6 w-20 rounded animate-pulse"
+                  />
+                  <div class="flex gap-1">
+                    <div
+                      :class="
+                        theme === 'white'
+                          ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                          : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                      "
+                      class="h-8 w-8 rounded animate-pulse"
+                    />
+                    <div
+                      :class="
+                        theme === 'white'
+                          ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                          : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                      "
+                      class="h-8 w-8 rounded animate-pulse"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <section
+      v-if="!isLoadingProducts"
       v-for="(list, idx) in lists"
       :key="idx"
-      class="mb-12 px-4 sm:px-8 lg:px-12 pb-6"
+      class="mb-12 pb-6 px-[5%]"
       :class="
-        theme === 'white'
+        (idx === 0 ? 'pt-8' : '') +
+        ' ' +
+        (theme === 'white'
           ? 'border-b border-amber-200'
-          : 'border-b border-pink-900/30'
+          : 'border-b border-pink-900/30')
       "
     >
       <h3
@@ -58,149 +175,186 @@
         {{ list.title }}
       </h3>
 
-      <div class="relative">
-        <!-- Carousel -->
-        <div
-          :ref="(el) => setContainer(el, idx)"
-          class="flex gap-4 overflow-x-auto py-4 px-4 scrollbar-thin"
-          :class="
-            theme === 'white' ? 'scrollbar-amber-300' : 'scrollbar-pink-500'
-          "
-        >
-          <div
-            v-for="item in list.items"
-            :key="item.id"
-            class="flex-shrink-0 group"
+      <div class="flex items-center justify-center gap-4">
+        <!-- Left Arrow Container - always takes space -->
+        <div class="w-8 h-8">
+          <button
+            v-if="needsScroll(idx) && canScrollLeft(idx)"
+            @click="scrollCarousel(idx, 'left')"
+            :class="
+              theme === 'white'
+                ? 'bg-amber-200 hover:bg-amber-300 text-amber-800'
+                : 'bg-pink-600 hover:bg-pink-700 text-white'
+            "
+            class="w-full h-full p-1 rounded-full shadow-lg transition-colors flex items-center justify-center"
+            title="Anterior"
           >
-            <!-- Card -->
-            <div
-              :class="
-                (theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]') +
-                ' rounded-xl shadow-lg overflow-hidden w-auto min-w-48 flex flex-col transition-transform hover:scale-105'
-              "
-            >
-              <!-- Image container -->
-              <div
-                class="relative w-full h-40 overflow-hidden bg-gray-200 flex items-center justify-center"
-              >
-                <!-- Skeleton -->
-                <div
-                  v-if="!imageLoadingState[item.id]"
-                  class="absolute inset-0 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 animate-pulse"
-                />
+            <span class="material-symbols-outlined text-lg">arrow_back</span>
+          </button>
+        </div>
 
-                <img
-                  v-if="item.image?.trim()"
-                  :src="item.image"
-                  alt="Perfume"
-                  @load="onImageLoad(item.id)"
-                  @error="onImageError(item.id)"
-                  class="w-full h-full object-cover relative z-10"
-                />
-                <div v-else class="text-center px-4 relative z-10">
-                  <p
-                    :class="
-                      theme === 'white' ? 'text-gray-500' : 'text-gray-400'
-                    "
-                    class="text-sm font-medium"
-                  >
-                    Imagem será disponibilizada em breve
-                  </p>
-                </div>
-              </div>
-              <!-- Info + Details button -->
-              <div class="flex-1 p-4 flex flex-col justify-between relative">
-                <div>
-                  <h4
-                    :class="theme === 'white' ? 'text-black' : 'text-white'"
-                    class="font-semibold text-sm"
-                  >
-                    {{ item.nome }}
-                  </h4>
-                  <p
-                    :class="
-                      theme === 'white' ? 'text-amber-600' : 'text-pink-300'
-                    "
-                    class="text-xs font-semibold mt-1"
-                  >
-                    {{ item.tipo }} • {{ item.categoria }}
-                  </p>
-                  <p
-                    :class="
-                      theme === 'white' ? 'text-gray-600' : 'text-gray-400'
-                    "
-                    class="text-xs capitalize mt-1"
-                  >
-                    {{ item.genero }}
-                  </p>
-                </div>
-                <div class="flex items-end justify-between">
-                  <p
-                    :class="[
-                      theme === 'white' ? 'text-amber-600' : 'text-pink-300',
-                      isSobConsultaProduct(item)
-                        ? 'cursor-pointer hover:opacity-70 transition-opacity'
-                        : '',
-                    ]"
-                    class="text-lg font-bold"
-                    @click.stop="
-                      isSobConsultaProduct(item) &&
-                      (addToCart(item), (showCartModal = true))
-                    "
-                    :title="
-                      isSobConsultaProduct(item)
-                        ? 'Clique para adicionar ao carrinho'
-                        : ''
-                    "
-                  >
-                    {{ getPriceLabel(item) }}
-                  </p>
-                  <div class="flex items-center gap-1">
-                    <button
-                      @click.stop="toggleCartItem(item)"
+        <!-- Carousel - 70% -->
+        <div class="w-[70%]">
+          <div
+            :ref="(el) => setContainer(el, idx)"
+            @scroll="updateScrollPositions(idx)"
+            class="flex gap-4 overflow-x-auto py-4 px-2 scrollbar-thin"
+            :class="
+              theme === 'white' ? 'scrollbar-amber-300' : 'scrollbar-pink-500'
+            "
+          >
+            <div
+              v-for="item in list.items"
+              :key="item.id"
+              class="flex-shrink-0 group"
+            >
+              <!-- Card -->
+              <div
+                :class="
+                  (theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]') +
+                  ' rounded-xl shadow-lg overflow-hidden w-auto min-w-48 flex flex-col transition-transform hover:scale-105'
+                "
+              >
+                <!-- Image container -->
+                <div
+                  class="relative w-full h-40 overflow-hidden bg-gray-200 flex items-center justify-center"
+                >
+                  <!-- Skeleton -->
+                  <div
+                    v-if="!imageLoadingState[item.id]"
+                    class="absolute inset-0 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 animate-pulse"
+                  />
+
+                  <img
+                    v-if="item.image?.trim()"
+                    :src="item.image"
+                    alt="Perfume"
+                    @load="onImageLoad(item.id)"
+                    @error="onImageError(item.id)"
+                    class="w-full h-full object-cover relative z-10"
+                  />
+                  <div v-else class="text-center px-4 relative z-10">
+                    <p
                       :class="
-                        isInCart(item)
-                          ? theme === 'white'
-                            ? 'text-red-600 hover:text-red-700'
-                            : 'text-red-400 hover:text-red-300'
-                          : theme === 'white'
-                            ? 'text-sky-700 hover:text-sky-800'
-                            : 'text-sky-300 hover:text-sky-200'
+                        theme === 'white' ? 'text-gray-500' : 'text-gray-400'
                       "
-                      class="p-1"
+                      class="text-sm font-medium"
+                    >
+                      Imagem será disponibilizada em breve
+                    </p>
+                  </div>
+                </div>
+                <!-- Info + Details button -->
+                <div class="flex-1 p-4 flex flex-col justify-between relative">
+                  <div>
+                    <h4
+                      :class="theme === 'white' ? 'text-black' : 'text-white'"
+                      class="font-semibold text-sm"
+                    >
+                      {{ item.nome }}
+                    </h4>
+                    <p
+                      :class="
+                        theme === 'white' ? 'text-amber-600' : 'text-pink-300'
+                      "
+                      class="text-xs font-semibold mt-1"
+                    >
+                      {{ item.tipo }} • {{ item.categoria }}
+                    </p>
+                    <p
+                      :class="
+                        theme === 'white' ? 'text-gray-600' : 'text-gray-400'
+                      "
+                      class="text-xs capitalize mt-1"
+                    >
+                      {{ item.genero }}
+                    </p>
+                  </div>
+                  <div class="flex items-end justify-between">
+                    <p
+                      :class="[
+                        theme === 'white' ? 'text-amber-600' : 'text-pink-300',
+                        isSobConsultaProduct(item)
+                          ? 'cursor-pointer hover:opacity-70 transition-opacity'
+                          : '',
+                      ]"
+                      class="text-lg font-bold"
+                      @click.stop="
+                        isSobConsultaProduct(item) &&
+                        (addToCart(item), (showCartModal = true))
+                      "
                       :title="
-                        isInCart(item)
-                          ? 'Remover do carrinho'
-                          : 'Adicionar ao carrinho'
+                        isSobConsultaProduct(item)
+                          ? 'Clique para adicionar ao carrinho'
+                          : ''
                       "
                     >
-                      <span class="material-symbols-outlined text-lg">
-                        {{
+                      {{ getPriceLabel(item) }}
+                    </p>
+                    <div class="flex items-center gap-1">
+                      <button
+                        @click.stop="toggleCartItem(item)"
+                        :class="
                           isInCart(item)
-                            ? 'remove_shopping_cart'
-                            : 'add_shopping_cart'
-                        }}
-                      </span>
-                    </button>
-                    <button
-                      @click.stop="selectedProduct = item"
-                      :class="
-                        theme === 'white'
-                          ? 'text-amber-600 hover:text-amber-700'
-                          : 'text-pink-300 hover:text-pink-400'
-                      "
-                      class="p-1"
-                      title="Ver detalhes"
-                    >
-                      <span class="material-symbols-outlined text-lg"
-                        >info</span
+                            ? theme === 'white'
+                              ? 'text-red-600 hover:text-red-700'
+                              : 'text-red-400 hover:text-red-300'
+                            : theme === 'white'
+                              ? 'text-sky-700 hover:text-sky-800'
+                              : 'text-sky-300 hover:text-sky-200'
+                        "
+                        class="p-1"
+                        :title="
+                          isInCart(item)
+                            ? 'Remover do carrinho'
+                            : 'Adicionar ao carrinho'
+                        "
                       >
-                    </button>
+                        <span class="material-symbols-outlined text-lg">
+                          {{
+                            isInCart(item)
+                              ? 'remove_shopping_cart'
+                              : 'add_shopping_cart'
+                          }}
+                        </span>
+                      </button>
+                      <button
+                        @click.stop="selectedProduct = item"
+                        :class="
+                          theme === 'white'
+                            ? 'text-amber-600 hover:text-amber-700'
+                            : 'text-pink-300 hover:text-pink-400'
+                        "
+                        class="p-1"
+                        title="Ver detalhes"
+                      >
+                        <span class="material-symbols-outlined text-lg"
+                          >info</span
+                        >
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Right Arrow Container - always takes space -->
+        <div class="w-8 h-8">
+          <button
+            v-if="needsScroll(idx) && canScrollRight(idx)"
+            @click="scrollCarousel(idx, 'right')"
+            :class="
+              theme === 'white'
+                ? 'bg-amber-200 hover:bg-amber-300 text-amber-800'
+                : 'bg-pink-600 hover:bg-pink-700 text-white'
+            "
+            class="w-full h-full p-1 rounded-full shadow-lg transition-colors flex items-center justify-center"
+            title="Próximo"
+          >
+            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+          </button>
         </div>
       </div>
     </section>
@@ -1050,6 +1204,8 @@
 
 <script setup>
 import { ref, inject, computed, onMounted, watch } from 'vue';
+import { Cloudinary } from '@cloudinary/url-gen';
+import { scale } from '@cloudinary/url-gen/actions/resize';
 
 const emit = defineEmits(['back']);
 const theme = inject('theme');
@@ -1079,6 +1235,7 @@ const lists = computed(() => {
 // Filter state
 const showFilters = ref(false);
 const showError = ref(false);
+const isLoadingProducts = ref(true);
 const infoMessageFading = ref(false);
 const errorMessage = ref('');
 const searchQuery = ref('');
@@ -1152,6 +1309,21 @@ function clearFilters() {
   filterCategoria.value = '';
   filterML.value = '';
 }
+
+// Cloudinary setup
+const CLOUD_NAME = 'dsxdphuim';
+const cld = new Cloudinary({ cloud: { cloudName: CLOUD_NAME } });
+
+function buildImageUrl(publicId, width) {
+  return cld
+    .image(publicId)
+    .resize(scale().width(width))
+    .format('auto')
+    .quality('auto')
+    .toURL();
+}
+
+const logoUrl = computed(() => buildImageUrl('logo_crop_qoc5ff', 100));
 
 function isNumericPrice(price) {
   return typeof price === 'number' && Number.isFinite(price);
@@ -1290,7 +1462,7 @@ function sendCartMessage() {
         lines.push(`Quantidade desejada: ${quantity}`);
       }
 
-      lines.push(`Preço: ${getPriceLabel(item)}`);
+      lines.push(`Preço Unitário: ${getPriceLabel(item)}`);
       lines.push('');
 
       return lines;
@@ -1308,7 +1480,6 @@ function sendCartMessage() {
 
 function closeCartModal() {
   showCartModal.value = false;
-  cartName.value = '';
   cartNameError.value = '';
 }
 
@@ -1369,7 +1540,7 @@ function contactSeller(product, customerName, mode = 'product', quantity = 1) {
             `Categoria: ${item.categoria || '-'}`,
             `Código: ${item.codigo || '-'}`,
             `ML: ${item.ml || '-'}`,
-            `Preço: ${getPriceLabel(item)}`,
+            `Preço Unitário: ${getPriceLabel(item)}`,
             '',
           ]),
           cartHasNumericPrices.value
@@ -1384,7 +1555,7 @@ function contactSeller(product, customerName, mode = 'product', quantity = 1) {
           `Nome: ${product.nome || '-'}`,
           `ML: ${product.ml || '-'}`,
           `Quantidade desejada: ${quantity}`,
-          `Preço: ${getPriceLabel(product)}`,
+          `Preço Unitário: ${getPriceLabel(product)}`,
         ].join('\n');
 
   const sellerPhone = getRandomSellerPhone();
@@ -1480,10 +1651,54 @@ const searchSuggestions = computed(() => {
 });
 
 const containers = ref([]);
+const scrollPositions = ref({});
 
 function setContainer(el, idx) {
   if (!containers.value) containers.value = [];
   containers.value[idx] = el;
+}
+
+function updateScrollPositions(idx) {
+  const container = containers.value[idx];
+  if (!container) return;
+
+  if (!scrollPositions.value) scrollPositions.value = {};
+  scrollPositions.value[idx] = {
+    scrollLeft: container.scrollLeft,
+    scrollWidth: container.scrollWidth,
+    clientWidth: container.clientWidth,
+  };
+}
+
+function needsScroll(idx) {
+  const pos = scrollPositions.value[idx];
+  return pos && pos.scrollWidth > pos.clientWidth;
+}
+
+function canScrollLeft(idx) {
+  const pos = scrollPositions.value[idx];
+  return pos && pos.scrollLeft > 0;
+}
+
+function canScrollRight(idx) {
+  const pos = scrollPositions.value[idx];
+  return pos && pos.scrollLeft + pos.clientWidth < pos.scrollWidth - 10;
+}
+
+function scrollCarousel(idx, direction) {
+  const container = containers.value[idx];
+  if (!container) return;
+
+  // ~3 items scroll (cada card é min-w-48 + gap-4 = ~208px)
+  const scrollAmount = 600;
+  if (direction === 'left') {
+    container.scrollLeft -= scrollAmount;
+  } else {
+    container.scrollLeft += scrollAmount;
+  }
+
+  // Update positions after scroll
+  setTimeout(() => updateScrollPositions(idx), 0);
 }
 
 // Drag to scroll
@@ -1546,16 +1761,32 @@ async function getProducts() {
   } catch (e) {
     showError.value = true;
     errorMessage.value = e.message || 'Erro desconhecido ao carregar produtos';
+  } finally {
+    isLoadingProducts.value = false;
   }
 }
 
 onMounted(() => {
+  // Scroll para o topo da página
+  window.scrollTo(0, 0);
+
+  // Carregar produtos imediatamente
   getProducts();
+
   // Carregar nome salvo do localStorage
   const savedName = localStorage.getItem('cartUserName');
   if (savedName) {
     cartName.value = savedName;
   }
+});
+
+// Initialize scroll positions when products load
+watch(allProducts, () => {
+  setTimeout(() => {
+    containers.value.forEach((container, idx) => {
+      if (container) updateScrollPositions(idx);
+    });
+  }, 100);
 });
 
 // Rastrear carregamento de imagens
