@@ -10,8 +10,7 @@ gcloud/
 *.swp
 *.swo
 *~
-.netlify/functions-internal/
-.netlify/cache/
+
 .cache/
 perfumin-key.json
 Catalogo/

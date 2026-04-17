@@ -602,7 +602,7 @@ function sendContactMessage() {
   contactNameError.value = '';
 
   const compliment = getRandomCompliment();
-  const message = `Oi, meu nome é ${sanitizedName}. Eu vi seus produtos no site https://besbeauty.netlify.app/ (${compliment}) e tenho interesse!`;
+  const message = `Oi, meu nome é ${sanitizedName}. Eu vi seus produtos no site BeSBeauty (${compliment}) e tenho interesse!`;
 
   const encodedMessage = encodeURIComponent(message);
   const phone =

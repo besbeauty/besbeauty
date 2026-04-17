@@ -1537,7 +1537,7 @@ function contactSeller(product, customerName, mode = 'product', quantity = 1) {
   const message =
     mode === 'cart'
       ? [
-          `Olá, meu nome é ${sanitizedName}. Eu vim pelo site https://besbeauty.netlify.app/ (${compliment}) e tenho interesse nesses produtos:`,
+          `Olá, meu nome é ${sanitizedName}. Eu vim pelo site BeSBeauty (${compliment}) e tenho interesse nesses produtos:`,
           '',
           ...cartItems.value.flatMap((item, index) => [
             `${index + 1}. ${item.nome || '-'}`,
@@ -1552,7 +1552,7 @@ function contactSeller(product, customerName, mode = 'product', quantity = 1) {
             : 'Total da lista: Sob Consulta',
         ].join('\n')
       : [
-          `Olá, meu nome é ${sanitizedName}. Eu vim pelo site https://besbeauty.netlify.app/ (${compliment}) e estou interessado nesse ${product.nome}.`,
+          `Olá, meu nome é ${sanitizedName}. Eu vim pelo site BeSBeauty (${compliment}) e estou interessado nesse ${product.nome}.`,
           '',
           `Categoria: ${product.categoria || '-'}`,
           `Código: ${product.codigo || '-'}`,
@@ -1731,37 +1731,67 @@ function endDrag() {
 
 async function getProducts() {
   try {
-    const response = await fetch('/.netlify/functions/sheets');
+    const SHEET_ID = import.meta.env.VITE_SHEET_ID;
+    const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+
+    if (!SHEET_ID) {
+      throw new Error('SHEET_ID não configurado. Verifique seu .env.local');
+    }
+
+    if (!API_KEY || API_KEY === 'YOUR_PUBLIC_API_KEY_HERE') {
+      throw new Error(
+        'Google API Key não configurada. Você precisa criar uma API Key pública no Google Cloud Console e adicionar ao .env.local',
+      );
+    }
+
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Dados!A:J?key=${API_KEY}`;
+    const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const sheetData = await response.json();
 
-    if (data.error) {
-      throw new Error(`API: ${data.error}`);
+    if (sheetData.error) {
+      throw new Error(`API Error: ${sheetData.error.message}`);
     }
 
-    if (Array.isArray(data)) {
-      allProducts.value = data.map((p, i) => ({
+    const rows = sheetData.values || [];
+    if (rows.length < 2) {
+      throw new Error('Planilha vazia ou sem dados');
+    }
+
+    const data = rows.slice(1).map((row, i) => {
+      const rawImageId = row[9]?.trim() || '';
+      const priceRaw = row[6]?.toString().trim() || '';
+      const normalized = priceRaw.toLowerCase();
+      const numericCandidate = priceRaw
+        .replace(/r\$/gi, '')
+        .replace(/\s/g, '')
+        .replace(/\./g, '')
+        .replace(',', '.');
+      const parsed = Number.parseFloat(numericCandidate);
+      const hasNumericPrice = Number.isFinite(parsed);
+
+      return {
         id: i,
-        tipo: p.tipo || 'Sem tipo',
-        categoria: p.categoria || 'Sem categoria',
-        genero: p.genero || 'Unissexo',
-        codigo: p.codigo || '',
-        nome: p.nome || 'Sem nome',
-        ml: p.ml || '',
-        preco: isNumericPrice(p.preco) ? p.preco : null,
-        precoRaw: p.preco_raw?.toString().trim() || '',
-        sobConsulta: p.sob_consulta === true,
-        quantidade: p.quantidade || 0,
-        destaque: p.destaque === 'Sim' || p.destaque === true,
-        image: p.image,
-      }));
-    } else {
-      throw new Error('Formato de dados inválido');
-    }
+        tipo: row[0]?.trim() || 'Sem tipo',
+        categoria: row[1]?.trim() || 'Sem categoria',
+        genero: row[2]?.trim() || 'Unissexo',
+        codigo: row[3]?.trim() || '',
+        nome: row[4]?.trim() || 'Sem nome',
+        ml: row[5]?.trim() || '',
+        preco: hasNumericPrice ? parsed : null,
+        precoRaw: priceRaw,
+        sobConsulta: !priceRaw || normalized === 'sob consulta',
+        quantidade: parseInt(row[7]) || 0,
+        destaque: row[8]?.trim().toLowerCase() === 'sim',
+        image: buildImageUrl(rawImageId, 300),
+      };
+    });
+
+    allProducts.value = data;
   } catch (e) {
     showError.value = true;
     errorMessage.value = e.message || 'Erro desconhecido ao carregar produtos';
