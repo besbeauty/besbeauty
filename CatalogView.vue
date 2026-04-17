@@ -1174,6 +1174,7 @@ function isInCart(product) {
 function addToCart(product) {
   if (!product || isInCart(product)) return;
   cartItems.value.push(product);
+  cartQuantities.value[product.id] = 1;
 }
 
 function removeFromCart(productId) {
