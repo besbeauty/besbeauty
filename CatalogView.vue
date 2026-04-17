@@ -1731,16 +1731,18 @@ function endDrag() {
 
 async function getProducts() {
   try {
-    const SHEET_ID = import.meta.env.VITE_SHEET_ID;
-    const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+    // Em desenvolvimento: usa import.meta.env
+    // Em produção (GitHub Pages): usa as constantes globais injetadas pelo Vite
+    const SHEET_ID = import.meta.env.VITE_SHEET_ID || (typeof __VITE_SHEET_ID__ !== 'undefined' ? __VITE_SHEET_ID__ : '');
+    const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || (typeof __VITE_GOOGLE_API_KEY__ !== 'undefined' ? __VITE_GOOGLE_API_KEY__ : '');
 
-    if (!SHEET_ID) {
-      throw new Error('SHEET_ID não configurado. Verifique seu .env.local');
+    if (!SHEET_ID || SHEET_ID === 'undefined' || SHEET_ID === '') {
+      throw new Error('SHEET_ID não configurado. Verifique seu .env.local (desenvolvimento) ou configure VITE_SHEET_ID nos Secrets do GitHub.');
     }
 
-    if (!API_KEY || API_KEY === 'YOUR_PUBLIC_API_KEY_HERE') {
+    if (!API_KEY || API_KEY === 'YOUR_PUBLIC_API_KEY_HERE' || API_KEY === 'YOUR_API_KEY_HERE' || API_KEY === 'undefined' || API_KEY === '') {
       throw new Error(
-        'Google API Key não configurada. Você precisa criar uma API Key pública no Google Cloud Console e adicionar ao .env.local',
+        'Google API Key não configurada. Configure VITE_GOOGLE_API_KEY nos Secrets do GitHub ou adicione ao .env.local para desenvolvimento.',
       );
     }
 
