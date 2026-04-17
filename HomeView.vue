@@ -605,7 +605,8 @@ function sendContactMessage() {
   const message = `Oi, meu nome é ${sanitizedName}. Eu vi seus produtos no site https://besbeauty.netlify.app/ (${compliment}) e tenho interesse!`;
 
   const encodedMessage = encodeURIComponent(message);
-  const phone = selectedVendor.value === 'sarah' ? '5511947758048' : '5511970489098';
+  const phone =
+    selectedVendor.value === 'sarah' ? '5511947758048' : '5511970489098';
   const url = `https://wa.me/${phone}?text=${encodedMessage}`;
 
   window.open(url, '_blank');
