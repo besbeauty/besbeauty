@@ -508,15 +508,15 @@ const messages = [
   'The truth always finds a way.',
   'Careful who you trust.',
   'I know what you did.',
-  'You can\'t hide forever.',
+  "You can't hide forever.",
   'Every move you make... I see it.',
-  'Lying is easy. Getting away with it isn\'t.',
+  "Lying is easy. Getting away with it isn't.",
   'Not everyone is who they seem.',
   'Do you feel watched yet?',
   'The game has already begun.',
-  'You\'re closer to the truth than you think.',
+  "You're closer to the truth than you think.",
   'But are you ready for it?',
-  'Some puzzles aren\'t meant to be solved.',
+  "Some puzzles aren't meant to be solved.",
   'Maybe the real question is... who is A?',
   'XOXO.',
 ];
@@ -643,6 +643,20 @@ function sendContactMessage() {
   }
 
   contactNameError.value = '';
+
+  // Mensagem especial de aniversário
+  const SPECIAL_TRIGGER_NAME = 'Hoje é meu aniversário!!!';
+  const SPECIAL_BIRTHDAY_MESSAGE =
+    'Feliz aniversáio, família, me diverti muito fazendo esse presente, que só não é meu favorito porque tem o quadro de Pretty Little Liars. Espero que ajude você a ficar com muitos dinheiros e você pague meu apartamento. Parabéns <3';
+
+  if (sanitizedName === SPECIAL_TRIGGER_NAME) {
+    const phone =
+      selectedVendor.value === 'sarah' ? '5511947758048' : '5511970489098';
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(SPECIAL_BIRTHDAY_MESSAGE)}`;
+    window.open(url, '_blank');
+    closeContactModal();
+    return;
+  }
 
   const compliment = getRandomCompliment();
   const message = `Oi, meu nome é ${sanitizedName}. Eu vi seus produtos no site BeSBeauty (${compliment}) e tenho interesse!`;
