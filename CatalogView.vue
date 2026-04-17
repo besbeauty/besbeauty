@@ -227,7 +227,7 @@
 
                   <img
                     v-if="item.image?.trim()"
-                    :src="item.image"
+                    :src="getProductImageUrl(item)"
                     alt="Perfume"
                     @load="onImageLoad(item.id)"
                     @error="onImageError(item.id)"
@@ -843,7 +843,7 @@
           />
 
           <img
-            :src="selectedProduct.image"
+            :src="getProductImageUrl(selectedProduct)"
             alt=""
             @load="onImageLoad(`detail-${selectedProduct?.id}`)"
             @error="onImageError(`detail-${selectedProduct?.id}`)"
@@ -1078,7 +1078,7 @@
                 />
 
                 <img
-                  :src="item.image"
+                  :src="getProductImageUrl(item)"
                   alt=""
                   @load="onImageLoad(`cart-${item.id}`)"
                   @error="onImageError(`cart-${item.id}`)"
@@ -1261,6 +1261,7 @@ const cartNameError = ref('');
 const cartQuantities = ref({});
 const cartItems = ref([]);
 const imageLoadingState = ref({});
+const failedImages = ref({});
 const SELLER_PHONES = ['5511947758048', '5511970489098'];
 const CONTACT_COMPLIMENTS = [
   'Ta muito lindo!',
@@ -1315,15 +1316,26 @@ const CLOUD_NAME = 'dsxdphuim';
 const cld = new Cloudinary({ cloud: { cloudName: CLOUD_NAME } });
 
 function buildImageUrl(publicId, width) {
-  return cld
+  // A biblioteca Cloudinary já faz o encoding, não fazer double-encoding
+  const url = cld
     .image(publicId)
     .resize(scale().width(width))
     .format('auto')
     .quality('auto')
     .toURL();
+  console.log(`[Image] publicId: ${publicId} -> url: ${url}`);
+  return url;
 }
 
 const logoUrl = computed(() => buildImageUrl('logo_crop_qoc5ff', 100));
+
+function getProductImageUrl(item) {
+  // Se a imagem falhou ao carregar, retorna o fallback
+  if (failedImages.value[item.id] || failedImages.value[`carousel-${item.id}`] || failedImages.value[`detail-${item.id}`] || failedImages.value[`cart-${item.id}`]) {
+    return buildImageUrl('logo_crop_qoc5ff', 300);
+  }
+  return item.image;
+}
 
 function isNumericPrice(price) {
   return typeof price === 'number' && Number.isFinite(price);
@@ -1765,7 +1777,7 @@ async function getProducts() {
     }
 
     const data = rows.slice(1).map((row, i) => {
-      const rawImageId = row[9]?.trim() || '';
+      const rawImageId = row[9]?.trim() || 'logo_crop_qoc5ff';
       const priceRaw = row[6]?.toString().trim() || '';
       const normalized = priceRaw.toLowerCase();
       const numericCandidate = priceRaw
@@ -1827,11 +1839,14 @@ watch(allProducts, () => {
 
 // Rastrear carregamento de imagens
 function onImageLoad(imageId) {
+  console.log(`[ImageLoad] Success: ${imageId}`);
   imageLoadingState.value[imageId] = true;
 }
 
 function onImageError(imageId) {
+  console.error(`[ImageError] Failed: ${imageId}`);
   imageLoadingState.value[imageId] = true;
+  failedImages.value[imageId] = true;
 }
 
 // Salvar nome no localStorage quando mudar
