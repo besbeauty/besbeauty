@@ -83,13 +83,21 @@
               <div
                 class="relative w-full h-40 overflow-hidden bg-gray-200 flex items-center justify-center"
               >
+                <!-- Skeleton -->
+                <div
+                  v-if="!imageLoadingState[item.id]"
+                  class="absolute inset-0 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 animate-pulse"
+                />
+
                 <img
                   v-if="item.image?.trim()"
                   :src="item.image"
                   alt="Perfume"
-                  class="w-full h-full object-cover"
+                  @load="onImageLoad(item.id)"
+                  @error="onImageError(item.id)"
+                  class="w-full h-full object-cover relative z-10"
                 />
-                <div v-else class="text-center px-4">
+                <div v-else class="text-center px-4 relative z-10">
                   <p
                     :class="
                       theme === 'white' ? 'text-gray-500' : 'text-gray-400'
@@ -558,13 +566,21 @@
           >
             <div
               :class="theme === 'white' ? 'bg-gray-200' : 'bg-gray-700'"
-              class="w-full h-20 rounded mb-2 overflow-hidden cursor-pointer"
+              class="w-full h-20 rounded mb-2 overflow-hidden cursor-pointer relative"
               @click="selectedProduct = item"
             >
+              <!-- Skeleton -->
+              <div
+                v-if="!imageLoadingState[`carousel-${item.id}`]"
+                class="absolute inset-0 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 animate-pulse"
+              />
+
               <img
                 :src="item.image"
                 alt=""
-                class="w-full h-full object-cover"
+                @load="onImageLoad(`carousel-${item.id}`)"
+                @error="onImageError(`carousel-${item.id}`)"
+                class="w-full h-full object-cover relative z-10"
               />
             </div>
             <h4
@@ -663,11 +679,21 @@
         class="rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
       >
         <!-- Image -->
-        <div class="w-full h-64 overflow-hidden">
+        <div
+          class="w-full h-64 overflow-hidden relative bg-gray-200 dark:bg-gray-700"
+        >
+          <!-- Skeleton -->
+          <div
+            v-if="!imageLoadingState[`detail-${selectedProduct?.id}`]"
+            class="absolute inset-0 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 animate-pulse"
+          />
+
           <img
             :src="selectedProduct.image"
             alt=""
-            class="w-full h-full object-cover"
+            @load="onImageLoad(`detail-${selectedProduct?.id}`)"
+            @error="onImageError(`detail-${selectedProduct?.id}`)"
+            class="w-full h-full object-cover relative z-10"
           />
         </div>
 
@@ -888,11 +914,23 @@
             class="rounded-xl p-3"
           >
             <div class="flex items-start gap-3 mb-3">
-              <img
-                :src="item.image"
-                alt=""
-                class="w-16 h-16 rounded object-cover"
-              />
+              <div
+                class="relative w-16 h-16 rounded overflow-hidden bg-gray-200 dark:bg-gray-700 flex-shrink-0"
+              >
+                <!-- Skeleton -->
+                <div
+                  v-if="!imageLoadingState[`cart-${item.id}`]"
+                  class="absolute inset-0 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 animate-pulse"
+                />
+
+                <img
+                  :src="item.image"
+                  alt=""
+                  @load="onImageLoad(`cart-${item.id}`)"
+                  @error="onImageError(`cart-${item.id}`)"
+                  class="w-16 h-16 rounded object-cover relative z-10"
+                />
+              </div>
               <div class="flex-1 min-w-0">
                 <p
                   :class="theme === 'white' ? 'text-black' : 'text-white'"
@@ -1065,6 +1103,7 @@ const cartName = ref('');
 const cartNameError = ref('');
 const cartQuantities = ref({});
 const cartItems = ref([]);
+const imageLoadingState = ref({});
 const SELLER_PHONES = ['5511947758048', '5511970489098'];
 const CONTACT_COMPLIMENTS = [
   'Ta muito lindo!',
@@ -1518,6 +1557,15 @@ onMounted(() => {
     cartName.value = savedName;
   }
 });
+
+// Rastrear carregamento de imagens
+function onImageLoad(imageId) {
+  imageLoadingState.value[imageId] = true;
+}
+
+function onImageError(imageId) {
+  imageLoadingState.value[imageId] = true;
+}
 
 // Salvar nome no localStorage quando mudar
 watch(cartName, (newName) => {
