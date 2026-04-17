@@ -289,10 +289,9 @@
         Nossos Contatos
       </h3>
       <div class="grid grid-cols-2 gap-4 w-full max-w-sm">
-        <a
-          :href="whatsappSarah"
-          target="_blank"
-          class="flex flex-col items-center gap-2 p-3 rounded-lg"
+        <button
+          @click="openContactModal('sarah')"
+          class="flex flex-col items-center gap-2 p-3 rounded-lg cursor-pointer"
           :class="
             theme === 'white'
               ? 'bg-white hover:bg-amber-50'
@@ -316,11 +315,10 @@
           >
             (11) 94775-8048
           </p>
-        </a>
-        <a
-          :href="whatsappBruna"
-          target="_blank"
-          class="flex flex-col items-center gap-2 p-3 rounded-lg"
+        </button>
+        <button
+          @click="openContactModal('bruna')"
+          class="flex flex-col items-center gap-2 p-3 rounded-lg cursor-pointer"
           :class="
             theme === 'white'
               ? 'bg-white hover:bg-amber-50'
@@ -344,7 +342,7 @@
           >
             (11) 97048-9098
           </p>
-        </a>
+        </button>
       </div>
       <div class="flex flex-col items-center gap-3 w-full max-w-sm">
         <h4
@@ -411,11 +409,77 @@
         © 2024 B&S BEAUTY. All rights reserved.
       </p>
     </footer>
+
+    <!-- Contact Name Modal -->
+    <div
+      v-if="showContactNameModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      @click.self="closeContactModal()"
+    >
+      <div
+        :class="theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]'"
+        class="rounded-lg p-6 w-96 max-w-[90%] shadow-lg"
+      >
+        <h2
+          :class="theme === 'white' ? 'text-amber-700' : 'text-pink-400'"
+          class="text-xl font-bold mb-4"
+        >
+          Como você se chama?
+        </h2>
+
+        <input
+          v-model="contactName"
+          type="text"
+          placeholder="Seu nome"
+          :class="[
+            theme === 'white'
+              ? 'bg-gray-100 text-black border-amber-200'
+              : 'bg-[#2a3040] text-white border-pink-800',
+            'w-full px-4 py-2 border rounded-lg mb-4 outline-none focus:ring-2',
+            theme === 'white' ? 'focus:ring-amber-500' : 'focus:ring-pink-500',
+          ]"
+          @keyup.enter="sendContactMessage()"
+        />
+
+        <p
+          v-if="contactNameError"
+          :class="theme === 'white' ? 'text-red-600' : 'text-red-400'"
+          class="text-sm mb-4"
+        >
+          {{ contactNameError }}
+        </p>
+
+        <div class="flex gap-3">
+          <button
+            @click="closeContactModal()"
+            :class="
+              theme === 'white'
+                ? 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+            "
+            class="flex-1 py-2 rounded-lg font-semibold transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            @click="sendContactMessage()"
+            :class="
+              theme === 'white'
+                ? 'bg-amber-600 text-white hover:bg-amber-700'
+                : 'bg-pink-600 text-white hover:bg-pink-700'
+            "
+            class="flex-1 py-2 rounded-lg font-semibold transition-colors"
+          >
+            Enviar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { inject, computed } from 'vue';
+import { inject, computed, ref, watch, onMounted } from 'vue';
 import { Cloudinary } from '@cloudinary/url-gen';
 import { scale } from '@cloudinary/url-gen/actions/resize';
 
@@ -456,10 +520,100 @@ const luxurySrcset = computed(() =>
     .join(', '),
 );
 
-// WhatsApp links
-const whatsappMsg = encodeURIComponent(
-  'Oi, eu vi seus produtos no site e tenho interesse.',
-);
-const whatsappSarah = `https://wa.me/5511947758048?text=${whatsappMsg}`;
-const whatsappBruna = `https://wa.me/5511970489098?text=${whatsappMsg}`;
+// Contact compliments
+const CONTACT_COMPLIMENTS = [
+  'Ta muito lindo!',
+  'O site ficou maravilhoso!',
+  'Ficou lindo demais!',
+  'Que site incrivel, parabens!',
+  'Ta super elegante!',
+  'Ficou chique e muito bem feito!',
+  'Ta impecavel!',
+  'Ficou encantador!',
+  'Ta bonito de verdade!',
+  'O visual ficou sensacional!',
+  'Ficou moderno e muito bonito!',
+  'Ta caprichado demais!',
+  'Ficou um charme!',
+  'Ta maravilhoso de navegar!',
+  'Ficou de encher os olhos!',
+  'Ta lindo e super profissional!',
+  'Ficou top demais!',
+  'Ta um arraso!',
+  'Ficou perfeito!',
+  'Ta bonito, leve e elegante!',
+  'Ficou muito bem organizado e lindo!',
+  'Ta com cara de marca grande!',
+  'Ficou clean e sofisticado!',
+  'Ta surreal de bonito!',
+  'Ficou lindo, parabens pelo capricho!',
+  'Ta com um visual premium!',
+  'Ficou bonito demais, serio!',
+  'Ta estiloso e muito agradavel!',
+  'Ficou diferenciado e muito bonito!',
+  'Ta simplesmente espetacular!',
+];
+
+const SELLER_PHONES = [
+  '5511947758048', // Sarah
+  '5511970489098', // Bruna
+];
+
+// Contact form state
+const showContactNameModal = ref(false);
+const contactName = ref('');
+const contactNameError = ref('');
+const selectedVendor = ref(null);
+
+// Load name from localStorage on mount
+onMounted(() => {
+  const savedName = localStorage.getItem('contactUserName');
+  if (savedName) {
+    contactName.value = savedName;
+  }
+});
+
+// Save name to localStorage when it changes
+watch(contactName, (newName) => {
+  if (newName.trim()) {
+    localStorage.setItem('contactUserName', newName);
+  }
+});
+
+function getRandomCompliment() {
+  const index = Math.floor(Math.random() * CONTACT_COMPLIMENTS.length);
+  return CONTACT_COMPLIMENTS[index];
+}
+
+function openContactModal(vendor) {
+  selectedVendor.value = vendor;
+  contactNameError.value = '';
+  showContactNameModal.value = true;
+}
+
+function sendContactMessage() {
+  const sanitizedName = contactName.value?.trim();
+
+  if (!sanitizedName) {
+    contactNameError.value = 'Por favor, informe seu nome.';
+    return;
+  }
+
+  contactNameError.value = '';
+
+  const compliment = getRandomCompliment();
+  const message = `Oi, meu nome é ${sanitizedName}. Eu vi seus produtos no site https://besbeauty.netlify.app/ (${compliment}) e tenho interesse!`;
+
+  const encodedMessage = encodeURIComponent(message);
+  const phone = selectedVendor.value === 'sarah' ? '5511947758048' : '5511970489098';
+  const url = `https://wa.me/${phone}?text=${encodedMessage}`;
+
+  window.open(url, '_blank');
+  closeContactModal();
+}
+
+function closeContactModal() {
+  showContactNameModal.value = false;
+  contactNameError.value = '';
+}
 </script>
