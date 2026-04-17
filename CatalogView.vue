@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full max-w-screen-xl px-4 sm:px-8 mx-auto">
+  <div class="w-full min-h-screen overflow-x-hidden">
     <header
-      class="app-header mb-6 -mx-4 sm:-mx-8 px-4 sm:px-8"
+      class="app-header mb-6 px-4 sm:px-8 lg:px-12"
       :class="theme === 'white' ? 'bg-[#f3f3f3]' : 'bg-[#0a0c10]'"
     >
       <div class="flex justify-between items-center px-6 py-4">
@@ -41,7 +41,16 @@
       </div>
     </header>
 
-    <section v-for="(list, idx) in lists" :key="idx" class="mb-12 px-4 sm:px-0 pb-6" :class="theme === 'white' ? 'border-b border-amber-200' : 'border-b border-pink-900/30'">
+    <section
+      v-for="(list, idx) in lists"
+      :key="idx"
+      class="mb-12 px-4 sm:px-8 lg:px-12 pb-6"
+      :class="
+        theme === 'white'
+          ? 'border-b border-amber-200'
+          : 'border-b border-pink-900/30'
+      "
+    >
       <h3
         :class="theme === 'white' ? 'text-amber-600' : 'text-pink-600'"
         class="text-2xl font-semibold mb-6 text-center"
@@ -54,7 +63,9 @@
         <div
           :ref="(el) => setContainer(el, idx)"
           class="flex gap-4 overflow-x-auto py-4 px-4 scrollbar-thin"
-          :class="theme === 'white' ? 'scrollbar-amber-300' : 'scrollbar-pink-500'"
+          :class="
+            theme === 'white' ? 'scrollbar-amber-300' : 'scrollbar-pink-500'
+          "
         >
           <div
             v-for="item in list.items"
@@ -69,7 +80,9 @@
               "
             >
               <!-- Image container -->
-              <div class="relative w-full h-40 overflow-hidden bg-gray-200 flex items-center justify-center">
+              <div
+                class="relative w-full h-40 overflow-hidden bg-gray-200 flex items-center justify-center"
+              >
                 <img
                   v-if="item.image?.trim()"
                   :src="item.image"
@@ -78,7 +91,9 @@
                 />
                 <div v-else class="text-center px-4">
                   <p
-                    :class="theme === 'white' ? 'text-gray-500' : 'text-gray-400'"
+                    :class="
+                      theme === 'white' ? 'text-gray-500' : 'text-gray-400'
+                    "
                     class="text-sm font-medium"
                   >
                     Imagem será disponibilizada em breve
@@ -120,18 +135,48 @@
                   >
                     R$ {{ item.preco.toFixed(2).replace('.', ',') }}
                   </p>
-                  <button
-                    @click.stop="selectedProduct = item"
-                    :class="
-                      theme === 'white'
-                        ? 'text-amber-600 hover:text-amber-700'
-                        : 'text-pink-300 hover:text-pink-400'
-                    "
-                    class="p-1"
-                    title="Ver detalhes"
-                  >
-                    <span class="material-symbols-outlined text-lg">info</span>
-                  </button>
+                  <div class="flex items-center gap-1">
+                    <button
+                      @click.stop="toggleCartItem(item)"
+                      :class="
+                        isInCart(item)
+                          ? theme === 'white'
+                            ? 'text-red-600 hover:text-red-700'
+                            : 'text-red-400 hover:text-red-300'
+                          : theme === 'white'
+                            ? 'text-sky-700 hover:text-sky-800'
+                            : 'text-sky-300 hover:text-sky-200'
+                      "
+                      class="p-1"
+                      :title="
+                        isInCart(item)
+                          ? 'Remover do carrinho'
+                          : 'Adicionar ao carrinho'
+                      "
+                    >
+                      <span class="material-symbols-outlined text-lg">
+                        {{
+                          isInCart(item)
+                            ? 'remove_shopping_cart'
+                            : 'add_shopping_cart'
+                        }}
+                      </span>
+                    </button>
+                    <button
+                      @click.stop="selectedProduct = item"
+                      :class="
+                        theme === 'white'
+                          ? 'text-amber-600 hover:text-amber-700'
+                          : 'text-pink-300 hover:text-pink-400'
+                      "
+                      class="p-1"
+                      title="Ver detalhes"
+                    >
+                      <span class="material-symbols-outlined text-lg"
+                        >info</span
+                      >
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -196,12 +241,12 @@
     </div>
     <div
       v-if="showFilters"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-0 md:p-4"
       @click="showFilters = false"
     >
       <div
         :class="theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]'"
-        class="rounded-xl p-6 w-full max-w-md md:max-w-2xl max-h-[90vh] overflow-y-auto"
+        class="w-full h-full md:h-auto md:max-h-[92vh] md:max-w-6xl overflow-y-auto rounded-none md:rounded-xl p-6"
         @click.stop
       >
         <!-- Header -->
@@ -269,195 +314,216 @@
           </div>
         </div>
 
-        <!-- Price Range -->
         <div class="mb-6">
-          <label
-            :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
-            class="block text-sm font-semibold mb-2"
-            >Faixa de Preço</label
+          <button
+            @click="showAdvancedFilters = !showAdvancedFilters"
+            :class="
+              theme === 'white'
+                ? 'w-full px-4 py-3 bg-gray-100 text-black rounded-lg border border-gray-300'
+                : 'w-full px-4 py-3 bg-[#0a0c10] text-white rounded-lg border border-gray-600'
+            "
+            class="flex items-center justify-between text-sm font-semibold"
           >
-          <div class="flex gap-2 items-center">
-            <div class="flex-1">
-              <span
-                :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
-                class="text-xs"
-                >De</span
-              >
-              <input
-                v-model.number="priceMin"
-                type="number"
-                :class="
-                  theme === 'white'
-                    ? 'bg-gray-50 text-black border-gray-300'
-                    : 'bg-[#0a0c10] text-white border-gray-600'
-                "
-                class="w-full px-2 py-1 border rounded text-sm"
-              />
-            </div>
-            <span
-              :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
-              class="mt-4"
-              >a</span
-            >
-            <div class="flex-1">
-              <span
-                :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
-                class="text-xs"
-                >Até</span
-              >
-              <input
-                v-model.number="priceMax"
-                type="number"
-                :class="
-                  theme === 'white'
-                    ? 'bg-gray-50 text-black border-gray-300'
-                    : 'bg-[#0a0c10] text-white border-gray-600'
-                "
-                class="w-full px-2 py-1 border rounded text-sm"
-              />
-            </div>
-          </div>
-          <div
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
-            class="text-sm mt-2"
-          >
-            R$ {{ priceMin.toFixed(2).replace('.', ',') }} - R$
-            {{ priceMax.toFixed(2).replace('.', ',') }}
-          </div>
+            <span>Filtro avançado</span>
+            <span class="material-symbols-outlined text-base">
+              {{ showAdvancedFilters ? 'expand_less' : 'expand_more' }}
+            </span>
+          </button>
         </div>
 
-        <!-- Genre Filters -->
-        <div class="mb-6">
-          <label
-            :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
-            class="block text-sm font-semibold mb-3"
-            >Gênero</label
-          >
-          <div class="space-y-2">
+        <div v-if="showAdvancedFilters">
+          <!-- Price Range -->
+          <div class="mb-6">
+            <label
+              :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+              class="block text-sm font-semibold mb-2"
+              >Faixa de Preço</label
+            >
+            <div class="flex gap-2 items-center">
+              <div class="flex-1">
+                <span
+                  :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
+                  class="text-xs"
+                  >De</span
+                >
+                <input
+                  v-model.number="priceMin"
+                  type="number"
+                  :class="
+                    theme === 'white'
+                      ? 'bg-gray-50 text-black border-gray-300'
+                      : 'bg-[#0a0c10] text-white border-gray-600'
+                  "
+                  class="w-full px-2 py-1 border rounded text-sm"
+                />
+              </div>
+              <span
+                :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
+                class="mt-4"
+                >a</span
+              >
+              <div class="flex-1">
+                <span
+                  :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
+                  class="text-xs"
+                  >Até</span
+                >
+                <input
+                  v-model.number="priceMax"
+                  type="number"
+                  :class="
+                    theme === 'white'
+                      ? 'bg-gray-50 text-black border-gray-300'
+                      : 'bg-[#0a0c10] text-white border-gray-600'
+                  "
+                  class="w-full px-2 py-1 border rounded text-sm"
+                />
+              </div>
+            </div>
+            <div
+              :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
+              class="text-sm mt-2"
+            >
+              R$ {{ priceMin.toFixed(2).replace('.', ',') }} - R$
+              {{ priceMax.toFixed(2).replace('.', ',') }}
+            </div>
+          </div>
+
+          <!-- Genre Filters -->
+          <div class="mb-6">
+            <label
+              :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+              class="block text-sm font-semibold mb-3"
+              >Gênero</label
+            >
+            <div class="space-y-2">
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input
+                  v-model="filterFeminino"
+                  type="checkbox"
+                  class="w-4 h-4 rounded"
+                />
+                <span :class="theme === 'white' ? 'text-black' : 'text-white'"
+                  >Feminino</span
+                >
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input
+                  v-model="filterMasculino"
+                  type="checkbox"
+                  class="w-4 h-4 rounded"
+                />
+                <span :class="theme === 'white' ? 'text-black' : 'text-white'"
+                  >Masculino</span
+                >
+              </label>
+            </div>
+          </div>
+
+          <!-- Destaque Filter -->
+          <div class="mb-6">
             <label class="flex items-center gap-3 cursor-pointer">
               <input
-                v-model="filterFeminino"
+                v-model="filterDestaque"
                 type="checkbox"
                 class="w-4 h-4 rounded"
               />
-              <span :class="theme === 'white' ? 'text-black' : 'text-white'"
-                >Feminino</span
-              >
-            </label>
-            <label class="flex items-center gap-3 cursor-pointer">
-              <input
-                v-model="filterMasculino"
-                type="checkbox"
-                class="w-4 h-4 rounded"
-              />
-              <span :class="theme === 'white' ? 'text-black' : 'text-white'"
-                >Masculino</span
+              <span
+                :class="theme === 'white' ? 'text-black' : 'text-white'"
+                class="text-sm font-semibold"
+                >Apenas em destaque</span
               >
             </label>
           </div>
-        </div>
 
-        <!-- Destaque Filter -->
-        <div class="mb-6">
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input
-              v-model="filterDestaque"
-              type="checkbox"
-              class="w-4 h-4 rounded"
-            />
-            <span
-              :class="theme === 'white' ? 'text-black' : 'text-white'"
-              class="text-sm font-semibold"
-              >Apenas em destaque</span
+          <!-- Tipo Filter -->
+          <div class="mb-6">
+            <label
+              :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+              class="block text-sm font-semibold mb-3"
+              >Tipo</label
             >
-          </label>
-        </div>
+            <select
+              v-model="filterTipo"
+              :class="
+                theme === 'white'
+                  ? 'bg-gray-50 text-black border-gray-300'
+                  : 'bg-[#0a0c10] text-white border-gray-600'
+              "
+              class="w-full px-3 py-2 border rounded text-sm"
+            >
+              <option value="">Todos</option>
+              <option
+                v-for="tipo in [
+                  ...new Set(allProducts.map((p) => p.tipo).filter(Boolean)),
+                ]"
+                :key="tipo"
+                :value="tipo"
+              >
+                {{ tipo }}
+              </option>
+            </select>
+          </div>
 
-        <!-- Tipo Filter -->
-        <div class="mb-6">
-          <label
-            :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
-            class="block text-sm font-semibold mb-3"
-            >Tipo</label
-          >
-          <select
-            v-model="filterTipo"
-            :class="
-              theme === 'white'
-                ? 'bg-gray-50 text-black border-gray-300'
-                : 'bg-[#0a0c10] text-white border-gray-600'
-            "
-            class="w-full px-3 py-2 border rounded text-sm"
-          >
-            <option value="">Todos</option>
-            <option
-              v-for="tipo in [
-                ...new Set(allProducts.map((p) => p.tipo).filter(Boolean)),
-              ]"
-              :key="tipo"
-              :value="tipo"
+          <!-- Categoria Filter -->
+          <div class="mb-6">
+            <label
+              :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+              class="block text-sm font-semibold mb-3"
+              >Categoria</label
             >
-              {{ tipo }}
-            </option>
-          </select>
-        </div>
+            <select
+              v-model="filterCategoria"
+              :class="
+                theme === 'white'
+                  ? 'bg-gray-50 text-black border-gray-300'
+                  : 'bg-[#0a0c10] text-white border-gray-600'
+              "
+              class="w-full px-3 py-2 border rounded text-sm"
+            >
+              <option value="">Todos</option>
+              <option
+                v-for="cat in [
+                  ...new Set(
+                    allProducts.map((p) => p.categoria).filter(Boolean),
+                  ),
+                ]"
+                :key="cat"
+                :value="cat"
+              >
+                {{ cat }}
+              </option>
+            </select>
+          </div>
 
-        <!-- Categoria Filter -->
-        <div class="mb-6">
-          <label
-            :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
-            class="block text-sm font-semibold mb-3"
-            >Categoria</label
-          >
-          <select
-            v-model="filterCategoria"
-            :class="
-              theme === 'white'
-                ? 'bg-gray-50 text-black border-gray-300'
-                : 'bg-[#0a0c10] text-white border-gray-600'
-            "
-            class="w-full px-3 py-2 border rounded text-sm"
-          >
-            <option value="">Todos</option>
-            <option
-              v-for="cat in [
-                ...new Set(allProducts.map((p) => p.categoria).filter(Boolean)),
-              ]"
-              :key="cat"
-              :value="cat"
+          <!-- ML Filter -->
+          <div class="mb-6">
+            <label
+              :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+              class="block text-sm font-semibold mb-3"
+              >ML</label
             >
-              {{ cat }}
-            </option>
-          </select>
-        </div>
-
-        <!-- ML Filter -->
-        <div class="mb-6">
-          <label
-            :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
-            class="block text-sm font-semibold mb-3"
-            >ML</label
-          >
-          <select
-            v-model="filterML"
-            :class="
-              theme === 'white'
-                ? 'bg-gray-50 text-black border-gray-300'
-                : 'bg-[#0a0c10] text-white border-gray-600'
-            "
-            class="w-full px-3 py-2 border rounded text-sm"
-          >
-            <option value="">Todos</option>
-            <option
-              v-for="ml in [
-                ...new Set(allProducts.map((p) => p.ml).filter(Boolean)),
-              ]"
-              :key="ml"
-              :value="ml"
+            <select
+              v-model="filterML"
+              :class="
+                theme === 'white'
+                  ? 'bg-gray-50 text-black border-gray-300'
+                  : 'bg-[#0a0c10] text-white border-gray-600'
+              "
+              class="w-full px-3 py-2 border rounded text-sm"
             >
-              {{ ml }}
-            </option>
-          </select>
+              <option value="">Todos</option>
+              <option
+                v-for="ml in [
+                  ...new Set(allProducts.map((p) => p.ml).filter(Boolean)),
+                ]"
+                :key="ml"
+                :value="ml"
+              >
+                {{ ml }}
+              </option>
+            </select>
+          </div>
         </div>
 
         <!-- Results -->
@@ -471,7 +537,7 @@
         </div>
 
         <!-- Results Grid -->
-        <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
           <div
             v-for="item in filteredProducts"
             :key="item.id"
@@ -513,22 +579,41 @@
             >
               R$ {{ item.preco.toFixed(2).replace('.', ',') }}
             </p>
+            <div class="mt-2 flex gap-2">
+              <button
+                @click="selectedProduct = item"
+                :class="
+                  theme === 'white'
+                    ? 'flex-1 px-2 py-1 bg-amber-100 text-amber-700 rounded-full'
+                    : 'flex-1 px-2 py-1 bg-pink-900/40 text-pink-300 rounded-full'
+                "
+                class="text-[11px] font-semibold"
+              >
+                Detalhes
+              </button>
+              <button
+                @click="toggleCartItem(item)"
+                :class="
+                  isInCart(item)
+                    ? theme === 'white'
+                      ? 'flex-1 px-2 py-1 bg-red-100 text-red-700 rounded-full'
+                      : 'flex-1 px-2 py-1 bg-red-900/40 text-red-300 rounded-full'
+                    : theme === 'white'
+                      ? 'flex-1 px-2 py-1 bg-sky-100 text-sky-800 rounded-full'
+                      : 'flex-1 px-2 py-1 bg-sky-400 text-[#0a0c10] rounded-full'
+                "
+                class="text-[11px] font-semibold"
+              >
+                {{ isInCart(item) ? 'Remover' : '+ Carrinho' }}
+              </button>
+            </div>
           </div>
         </div>
 
         <!-- Action Buttons -->
         <div class="flex gap-2">
           <button
-            @click="
-              () => {
-                searchQuery = '';
-                priceMin = 0;
-                priceMax = 500;
-                filterFeminino = false;
-                filterMasculino = false;
-                filterDestaque = false;
-              }
-            "
+            @click="clearFilters"
             :class="
               theme === 'white'
                 ? 'flex-1 px-4 py-2 bg-gray-200 text-black rounded-full'
@@ -650,6 +735,38 @@
           </p>
 
           <button
+            @click="toggleCartItem(selectedProduct)"
+            :class="
+              isInCart(selectedProduct)
+                ? theme === 'white'
+                  ? 'w-full px-4 py-3 mb-3 bg-red-100 text-red-800 rounded-full'
+                  : 'w-full px-4 py-3 mb-3 bg-red-900/40 text-red-300 rounded-full'
+                : theme === 'white'
+                  ? 'w-full px-4 py-3 mb-3 bg-sky-100 text-sky-800 rounded-full'
+                  : 'w-full px-4 py-3 mb-3 bg-sky-400 text-[#0a0c10] rounded-full'
+            "
+            class="font-semibold"
+          >
+            {{
+              isInCart(selectedProduct)
+                ? 'Remover do carrinho'
+                : 'Adicionar ao carrinho'
+            }}
+          </button>
+
+          <button
+            @click="showCartModal = true"
+            :class="
+              theme === 'white'
+                ? 'w-full px-4 py-3 mb-3 bg-sky-100 text-sky-800 rounded-full'
+                : 'w-full px-4 py-3 mb-3 bg-sky-400 text-[#0a0c10] rounded-full'
+            "
+            class="font-semibold"
+          >
+            Ver carrinho e enviar lista
+          </button>
+
+          <button
             @click="selectedProduct = null"
             :class="
               theme === 'white'
@@ -659,6 +776,222 @@
             class="font-semibold"
           >
             Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button
+      @click="showCartModal = true"
+      :class="
+        theme === 'white'
+          ? 'fixed bottom-5 right-5 z-40 bg-sky-100 text-sky-800'
+          : 'fixed bottom-5 right-5 z-40 bg-sky-400 text-[#0a0c10]'
+      "
+      class="rounded-full shadow-lg px-4 py-3 flex items-center gap-2 font-semibold"
+      title="Abrir carrinho"
+    >
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span>{{ cartItems.length }}</span>
+    </button>
+
+    <!-- Cart Modal -->
+    <div
+      v-if="showCartModal"
+      class="fixed inset-0 bg-black/60 flex items-center justify-center z-[58] p-4"
+      @click="showCartModal = false"
+    >
+      <div
+        @click.stop
+        :class="theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]'"
+        class="rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <h3
+            :class="theme === 'white' ? 'text-black' : 'text-white'"
+            class="text-2xl font-semibold"
+          >
+            Carrinho ({{ cartItems.length }})
+          </h3>
+          <button
+            @click="showCartModal = false"
+            class="p-2 rounded-full"
+            :class="
+              theme === 'white' ? 'hover:bg-gray-100' : 'hover:bg-[#0a0c10]'
+            "
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div v-if="cartItems.length === 0" class="py-10 text-center">
+          <p :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'">
+            Seu carrinho está vazio. Use o botão + nos produtos para montar sua
+            lista.
+          </p>
+        </div>
+
+        <div v-else class="space-y-3 mb-6">
+          <div
+            v-for="item in cartItems"
+            :key="item.id"
+            :class="theme === 'white' ? 'bg-gray-50' : 'bg-[#0a0c10]'"
+            class="rounded-xl p-3 flex items-start gap-3"
+          >
+            <img
+              :src="item.image"
+              alt=""
+              class="w-16 h-16 rounded object-cover"
+            />
+            <div class="flex-1 min-w-0">
+              <p
+                :class="theme === 'white' ? 'text-black' : 'text-white'"
+                class="font-semibold text-sm truncate"
+              >
+                {{ item.nome }}
+              </p>
+              <p
+                :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
+                class="text-xs"
+              >
+                {{ item.categoria }} • {{ item.codigo || 'Sem código' }} •
+                {{ item.ml || '-' }}
+              </p>
+              <p
+                :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
+                class="text-sm font-bold"
+              >
+                R$ {{ formatPrice(item.preco) }}
+              </p>
+            </div>
+            <button
+              @click="removeFromCart(item.id)"
+              :class="theme === 'white' ? 'text-red-600' : 'text-red-400'"
+              class="p-1"
+              title="Remover"
+            >
+              <span class="material-symbols-outlined">delete</span>
+            </button>
+          </div>
+        </div>
+
+        <div
+          v-if="cartItems.length > 0"
+          class="flex items-center justify-between mb-5"
+        >
+          <span :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+            >Total</span
+          >
+          <span
+            :class="theme === 'white' ? 'text-amber-700' : 'text-pink-300'"
+            class="text-xl font-bold"
+          >
+            R$ {{ formatPrice(cartTotal) }}
+          </span>
+        </div>
+
+        <div class="flex gap-2">
+          <button
+            @click="clearCart"
+            :disabled="cartItems.length === 0"
+            :class="
+              theme === 'white'
+                ? 'flex-1 px-4 py-2 bg-gray-200 text-black rounded-full disabled:opacity-50'
+                : 'flex-1 px-4 py-2 bg-gray-700 text-white rounded-full disabled:opacity-50'
+            "
+            class="text-sm font-semibold"
+          >
+            Limpar carrinho
+          </button>
+          <button
+            @click="openContactModal(null, 'cart')"
+            :disabled="cartItems.length === 0"
+            :class="
+              theme === 'white'
+                ? 'flex-1 px-4 py-2 bg-sky-100 text-sky-800 rounded-full disabled:opacity-50'
+                : 'flex-1 px-4 py-2 bg-sky-400 text-[#0a0c10] rounded-full disabled:opacity-50'
+            "
+            class="text-sm font-semibold"
+          >
+            Enviar lista para vendedora
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Name Modal -->
+    <div
+      v-if="showContactModal"
+      class="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4"
+      @click="closeContactModal"
+    >
+      <div
+        @click.stop
+        :class="theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]'"
+        class="rounded-2xl w-full max-w-md p-6"
+      >
+        <h3
+          :class="theme === 'white' ? 'text-black' : 'text-white'"
+          class="text-xl font-semibold mb-2"
+        >
+          Entrar em contato
+        </h3>
+        <p
+          :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
+          class="text-sm mb-4"
+        >
+          Informe seu nome para enviar a mensagem sobre
+          {{
+            contactMode === 'cart'
+              ? `${cartItems.length} produto(s) no carrinho`
+              : contactTargetProduct?.nome || 'o produto'
+          }}.
+        </p>
+
+        <label
+          :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+          class="block text-sm font-semibold mb-2"
+        >
+          Seu nome
+        </label>
+        <input
+          v-model="contactName"
+          type="text"
+          placeholder="Digite seu nome"
+          :class="
+            theme === 'white'
+              ? 'bg-gray-50 text-black border-gray-300'
+              : 'bg-[#0a0c10] text-white border-gray-600'
+          "
+          class="w-full px-3 py-2 border rounded-lg mb-2"
+          @keyup.enter="submitContact"
+        />
+        <p v-if="contactNameError" class="text-red-500 text-xs mb-4">
+          {{ contactNameError }}
+        </p>
+
+        <div class="flex gap-2">
+          <button
+            @click="closeContactModal"
+            :class="
+              theme === 'white'
+                ? 'flex-1 px-4 py-2 bg-gray-200 text-black rounded-full'
+                : 'flex-1 px-4 py-2 bg-gray-700 text-white rounded-full'
+            "
+            class="text-sm font-semibold"
+          >
+            Cancelar
+          </button>
+          <button
+            @click="submitContact"
+            :class="
+              theme === 'white'
+                ? 'flex-1 px-4 py-2 bg-sky-100 text-sky-800 rounded-full'
+                : 'flex-1 px-4 py-2 bg-sky-400 text-[#0a0c10] rounded-full'
+            "
+            class="text-sm font-semibold"
+          >
+            Continuar
           </button>
         </div>
       </div>
@@ -678,11 +1011,19 @@ const allProducts = ref([]);
 const selectedProduct = ref(null);
 
 // Home page lists (categoria-based destaques only)
-const categories = ['Brand Collection', 'Hidratante', 'Arabic Collection', 'Árabes Originais', 'Victoria\'s Secret'];
+const categories = [
+  'Brand Collection',
+  'Hidratante',
+  'Arabic Collection',
+  'Árabes Originais',
+  "Victoria's Secret",
+];
 const lists = computed(() => {
   return categories.map((categoria) => ({
     title: categoria,
-    items: allProducts.value.filter((p) => p.categoria === categoria && p.destaque),
+    items: allProducts.value.filter(
+      (p) => p.categoria === categoria && p.destaque,
+    ),
   }));
 });
 
@@ -699,6 +1040,190 @@ const filterDestaque = ref(false);
 const filterTipo = ref('');
 const filterCategoria = ref('');
 const filterML = ref('');
+const showAdvancedFilters = ref(false);
+const showContactModal = ref(false);
+const showCartModal = ref(false);
+const contactTargetProduct = ref(null);
+const contactMode = ref('product');
+const contactName = ref('');
+const contactNameError = ref('');
+const cartItems = ref([]);
+const SELLER_PHONES = ['5511947758048', '5511970489098'];
+const CONTACT_COMPLIMENTS = [
+  'Ta muito lindo!',
+  'O site ficou maravilhoso!',
+  'Ficou lindo demais!',
+  'Que site incrivel, parabens!',
+  'Ta super elegante!',
+  'Ficou chique e muito bem feito!',
+  'Ta impecavel!',
+  'Ficou encantador!',
+  'Ta bonito de verdade!',
+  'O visual ficou sensacional!',
+  'Ficou moderno e muito bonito!',
+  'Ta caprichado demais!',
+  'Ficou um charme!',
+  'Ta maravilhoso de navegar!',
+  'Ficou de encher os olhos!',
+  'Ta lindo e super profissional!',
+  'Ficou top demais!',
+  'Ta um arraso!',
+  'Ficou perfeito!',
+  'Ta bonito, leve e elegante!',
+  'Ficou muito bem organizado e lindo!',
+  'Ta com cara de marca grande!',
+  'Ficou clean e sofisticado!',
+  'Ta surreal de bonito!',
+  'Ficou lindo, parabens pelo capricho!',
+  'Ta com um visual premium!',
+  'Ficou bonito demais, serio!',
+  'Ta estiloso e muito agradavel!',
+  'Ficou diferenciado e muito bonito!',
+  'Ta simplesmente espetacular!',
+];
+const SPECIAL_TRIGGER_NAME = 'Hoje é meu aniversário!!!';
+const SPECIAL_BIRTHDAY_MESSAGE =
+  'Feliz aniversáio, família, me diverti muito fazendo esse presente, que só não é meu favorito porque tem o quadro de Pretty Little Liars. Espero que ajude você a ficar com muitos dinheiros e você pague meu apartamento. Parabéns <3';
+
+function clearFilters() {
+  searchQuery.value = '';
+  priceMin.value = 0;
+  priceMax.value = 500;
+  filterFeminino.value = false;
+  filterMasculino.value = false;
+  filterDestaque.value = false;
+  filterTipo.value = '';
+  filterCategoria.value = '';
+  filterML.value = '';
+}
+
+function formatPrice(price) {
+  return Number(price || 0)
+    .toFixed(2)
+    .replace('.', ',');
+}
+
+function getRandomSellerPhone() {
+  const index = Math.floor(Math.random() * SELLER_PHONES.length);
+  return SELLER_PHONES[index];
+}
+
+function getRandomCompliment() {
+  const index = Math.floor(Math.random() * CONTACT_COMPLIMENTS.length);
+  return CONTACT_COMPLIMENTS[index];
+}
+
+const cartTotal = computed(() => {
+  return cartItems.value.reduce(
+    (sum, item) => sum + Number(item.preco || 0),
+    0,
+  );
+});
+
+function isInCart(product) {
+  return cartItems.value.some((item) => item.id === product?.id);
+}
+
+function addToCart(product) {
+  if (!product || isInCart(product)) return;
+  cartItems.value.push(product);
+}
+
+function removeFromCart(productId) {
+  cartItems.value = cartItems.value.filter((item) => item.id !== productId);
+}
+
+function toggleCartItem(product) {
+  if (!product) return;
+  if (isInCart(product)) {
+    removeFromCart(product.id);
+    return;
+  }
+  addToCart(product);
+}
+
+function clearCart() {
+  cartItems.value = [];
+}
+
+function openContactModal(product = null, mode = 'product') {
+  if (mode === 'cart' && cartItems.value.length === 0) return;
+
+  contactMode.value = mode;
+  contactTargetProduct.value = product;
+  contactName.value = '';
+  contactNameError.value = '';
+  showContactModal.value = true;
+}
+
+function closeContactModal() {
+  showContactModal.value = false;
+  contactTargetProduct.value = null;
+  contactMode.value = 'product';
+  contactName.value = '';
+  contactNameError.value = '';
+}
+
+function contactSeller(product, customerName, mode = 'product') {
+  const sanitizedName = customerName?.trim();
+
+  if (!sanitizedName) return;
+
+  if (mode === 'product' && !product) return;
+
+  if (mode === 'cart' && cartItems.value.length === 0) return;
+
+  if (customerName === SPECIAL_TRIGGER_NAME) {
+    const sellerPhone = getRandomSellerPhone();
+    const url = `https://wa.me/${sellerPhone}?text=${encodeURIComponent(SPECIAL_BIRTHDAY_MESSAGE)}`;
+    window.open(url, '_blank');
+    return;
+  }
+
+  const compliment = getRandomCompliment();
+  const message =
+    mode === 'cart'
+      ? [
+          `Olá, meu nome é ${sanitizedName}. Eu vim pelo site https://besbeauty.netlify.app/ (${compliment}) e tenho interesse nesses produtos:`,
+          '',
+          ...cartItems.value.flatMap((item, index) => [
+            `${index + 1}. ${item.nome || '-'}`,
+            `Categoria: ${item.categoria || '-'}`,
+            `Código: ${item.codigo || '-'}`,
+            `ML: ${item.ml || '-'}`,
+            `Preço: R$ ${formatPrice(item.preco)}`,
+            '',
+          ]),
+          `Total da lista: R$ ${formatPrice(cartTotal.value)}`,
+        ].join('\n')
+      : [
+          `Olá, meu nome é ${sanitizedName}. Eu vim pelo site https://besbeauty.netlify.app/ (${compliment}) e estou interessado nesse ${product.nome}.`,
+          '',
+          `Categoria: ${product.categoria || '-'}`,
+          `Código: ${product.codigo || '-'}`,
+          `Nome: ${product.nome || '-'}`,
+          `ML: ${product.ml || '-'}`,
+          `Preço: R$ ${formatPrice(product.preco)}`,
+        ].join('\n');
+
+  const sellerPhone = getRandomSellerPhone();
+  const url = `https://wa.me/${sellerPhone}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+}
+
+function submitContact() {
+  const typedName = contactName.value;
+  const sanitizedName = typedName?.trim();
+
+  if (!sanitizedName) {
+    contactNameError.value = 'Por favor, informe seu nome.';
+    return;
+  }
+
+  contactNameError.value = '';
+  contactSeller(contactTargetProduct.value, typedName, contactMode.value);
+  closeContactModal();
+}
 
 const filteredProducts = computed(() => {
   return allProducts.value.filter((p) => {
@@ -805,12 +1330,6 @@ async function getProducts() {
         destaque: p.destaque === 'Sim' || p.destaque === true,
         image: p.image,
       }));
-      const categoriasUnicas = [...new Set(allProducts.value.map((p) => p.categoria))];
-      console.log('Categorias únicas na planilha:', categoriasUnicas);
-      console.log('Destaques por categoria:', categories.map((cat) => ({
-        categoria: cat,
-        destaques: allProducts.value.filter((p) => p.categoria === cat && p.destaque).length,
-      })));
     } else {
       throw new Error('Formato de dados inválido');
     }
