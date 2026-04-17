@@ -370,7 +370,7 @@
         "
         class="font-bold uppercase text-sm"
       >
-        Ver todos os perfumes
+        Ver tudo
       </button>
     </div>
 
@@ -1597,7 +1597,7 @@ function submitContact() {
 
   contactSeller(
     contactTargetProduct.value,
-    typedName,
+    sanitizedName,
     contactMode.value,
     contactQuantity.value,
   );
