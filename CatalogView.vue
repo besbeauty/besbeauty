@@ -1,49 +1,5 @@
 <template>
   <div class="w-full min-h-screen overflow-x-hidden">
-    <!-- Info Message Toast -->
-    <div
-      v-if="showInfoMessage"
-      :class="[
-        'fixed top-0 left-1/2 -translate-x-1/2 z-[9999] p-4 rounded-lg shadow-lg max-w-sm transition-opacity duration-500',
-        theme === 'white'
-          ? 'bg-amber-50 border-2 border-amber-200'
-          : 'bg-pink-950/40 border-2 border-pink-800',
-        infoMessageFading ? 'opacity-0' : 'opacity-100',
-      ]"
-    >
-      <div class="flex items-start gap-3">
-        <div class="flex-1">
-          <h3
-            :class="theme === 'white' ? 'text-amber-800' : 'text-pink-200'"
-            class="font-semibold mb-1"
-          >
-            ℹ️ Informação Importante
-          </h3>
-          <p
-            :class="
-              theme === 'white'
-                ? 'text-amber-900 text-sm'
-                : 'text-pink-100 text-sm'
-            "
-          >
-            As quantidades são apenas <strong>estimativa</strong>. Trabalhamos
-            com <strong>sistema de pedidos</strong>, confirmado via WhatsApp.
-          </p>
-        </div>
-        <button
-          @click="showInfoMessage = false"
-          :class="
-            theme === 'white'
-              ? 'text-amber-600 hover:text-amber-800'
-              : 'text-pink-300 hover:text-pink-100'
-          "
-          class="flex-shrink-0 p-1"
-        >
-          <span class="material-symbols-outlined text-lg">close</span>
-        </button>
-      </div>
-    </div>
-
     <header
       class="app-header mb-6 px-4 sm:px-8 lg:px-12"
       :class="theme === 'white' ? 'bg-[#f3f3f3]' : 'bg-[#0a0c10]'"
@@ -769,30 +725,9 @@
               <div>
                 <p
                   :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
-                  class="text-xs flex items-center gap-1"
+                  class="text-xs"
                 >
                   Quantidade em estoque
-                  <button
-                    @click="
-                      showDetailQuantityTooltip = !showDetailQuantityTooltip
-                    "
-                    :class="
-                      theme === 'white'
-                        ? 'text-gray-600 hover:text-gray-800'
-                        : 'text-gray-400 hover:text-gray-200'
-                    "
-                    class="relative group cursor-help"
-                    title="Clique para informações"
-                  >
-                    <span class="material-symbols-outlined text-xs">info</span>
-                    <div
-                      v-if="showDetailQuantityTooltip"
-                      class="absolute bottom-full right-full -mr-2 mb-2 p-2 rounded text-xs whitespace-normal text-white bg-gray-800 z-50 max-w-xs"
-                    >
-                      As quantidades são apenas estimativa. Trabalhamos com
-                      sistema de pedidos, confirmado via WhatsApp.
-                    </div>
-                  </button>
                 </p>
                 <p
                   :class="theme === 'white' ? 'text-black' : 'text-white'"
@@ -996,28 +931,9 @@
             >
               <label
                 :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
-                class="text-xs font-semibold flex items-center gap-1 relative"
+                class="text-xs font-semibold"
               >
                 Qtd:
-                <button
-                  @click="showQuantityTooltip = !showQuantityTooltip"
-                  :class="
-                    theme === 'white'
-                      ? 'text-gray-600 hover:text-gray-800'
-                      : 'text-gray-400 hover:text-gray-200'
-                  "
-                  class="cursor-help"
-                  title="Clique para informações"
-                >
-                  <span class="material-symbols-outlined text-xs">info</span>
-                  <div
-                    v-if="showQuantityTooltip"
-                    class="absolute bottom-full right-full -mr-2 mb-2 p-2 rounded text-xs whitespace-normal text-white bg-gray-800 z-50 max-w-xs"
-                  >
-                    As quantidades são apenas estimativa. Trabalhamos com
-                    sistema de pedidos, confirmado via WhatsApp.
-                  </div>
-                </button>
               </label>
               <input
                 :value="cartQuantities[item.id] || 0"
@@ -1032,6 +948,18 @@
                 "
                 class="w-16 px-2 py-1 border rounded text-center text-sm"
               />
+              <div
+                v-if="
+                  !isSobConsultaProduct(item) &&
+                  (cartQuantities[item.id] || 0) > (item.quantidade || 999)
+                "
+                :class="theme === 'white' ? 'text-amber-700' : 'text-amber-300'"
+                class="text-xs mt-2 ml-2"
+              >
+                Temos {{ item.quantidade }}
+                {{ item.quantidade === 1 ? 'unidade' : 'unidades' }} disponível
+                para pronta entrega 💖 Mais unidades sob encomenda.
+              </div>
             </div>
           </div>
         </div>
@@ -1113,10 +1041,7 @@ const lists = computed(() => {
 // Filter state
 const showFilters = ref(false);
 const showError = ref(false);
-const showInfoMessage = ref(false);
 const infoMessageFading = ref(false);
-const showQuantityTooltip = ref(false);
-const showDetailQuantityTooltip = ref(false);
 const errorMessage = ref('');
 const searchQuery = ref('');
 const priceMin = ref(0);
@@ -1228,7 +1153,11 @@ function getRandomCompliment() {
 
 const cartTotal = computed(() => {
   return cartItems.value.reduce(
-    (sum, item) => sum + (isNumericPrice(item.preco) ? item.preco : 0),
+    (sum, item) =>
+      sum +
+      (isNumericPrice(item.preco)
+        ? item.preco * (cartQuantities.value[item.id] || 0)
+        : 0),
     0,
   );
 });
@@ -1587,19 +1516,6 @@ onMounted(() => {
   const savedName = localStorage.getItem('cartUserName');
   if (savedName) {
     cartName.value = savedName;
-  }
-
-  // Mostrar aviso de informação se não foi mostrado nesta sessão
-  if (!localStorage.getItem('infoMessageShown')) {
-    showInfoMessage.value = true;
-    localStorage.setItem('infoMessageShown', 'true');
-    setTimeout(() => {
-      infoMessageFading.value = true;
-      setTimeout(() => {
-        showInfoMessage.value = false;
-        infoMessageFading.value = false;
-      }, 2000);
-    }, 5000);
   }
 });
 
