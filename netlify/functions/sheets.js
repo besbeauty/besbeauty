@@ -8,6 +8,24 @@ function buildImageUrl(publicId) {
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_300/f_auto/q_auto/${imageId}`;
 }
 
+function parsePrice(rawPrice) {
+  const priceRaw = rawPrice?.toString().trim() || '';
+  const normalized = priceRaw.toLowerCase();
+  const numericCandidate = priceRaw
+    .replace(/r\$/gi, '')
+    .replace(/\s/g, '')
+    .replace(/\./g, '')
+    .replace(',', '.');
+  const parsed = Number.parseFloat(numericCandidate);
+  const hasNumericPrice = Number.isFinite(parsed);
+
+  return {
+    preco: hasNumericPrice ? parsed : null,
+    preco_raw: priceRaw,
+    sob_consulta: !priceRaw || normalized === 'sob consulta',
+  };
+}
+
 export const handler = async (event, context) => {
   try {
     const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
@@ -58,6 +76,8 @@ export const handler = async (event, context) => {
         });
       }
 
+      const price = parsePrice(row[6]);
+
       return {
         id: Math.random(),
         tipo: row[0]?.trim() || '',
@@ -66,9 +86,9 @@ export const handler = async (event, context) => {
         codigo: row[3]?.trim() || '',
         nome: row[4]?.trim() || '',
         ml: row[5]?.trim() || '',
-        preco:
-          parseFloat(row[6]?.toString().replace('R$', '').replace(',', '.')) ||
-          0,
+        preco: price.preco,
+        preco_raw: price.preco_raw,
+        sob_consulta: price.sob_consulta,
         quantidade: parseInt(row[7]) || 0,
         destaque: row[8]?.trim().toLowerCase() === 'sim',
         image: buildImageUrl(rawImageId),

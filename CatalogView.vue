@@ -128,12 +128,24 @@
                 </div>
                 <div class="flex items-end justify-between">
                   <p
-                    :class="
-                      theme === 'white' ? 'text-amber-600' : 'text-pink-300'
-                    "
+                    :class="[
+                      theme === 'white' ? 'text-amber-600' : 'text-pink-300',
+                      isSobConsultaProduct(item)
+                        ? 'cursor-pointer hover:opacity-70 transition-opacity'
+                        : '',
+                    ]"
                     class="text-lg font-bold"
+                    @click.stop="
+                      isSobConsultaProduct(item) &&
+                      (addToCart(item), (showCartModal = true))
+                    "
+                    :title="
+                      isSobConsultaProduct(item)
+                        ? 'Clique para adicionar ao carrinho'
+                        : ''
+                    "
                   >
-                    R$ {{ item.preco.toFixed(2).replace('.', ',') }}
+                    {{ getPriceLabel(item) }}
                   </p>
                   <div class="flex items-center gap-1">
                     <button
@@ -577,7 +589,7 @@
               :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
               class="text-sm font-bold"
             >
-              R$ {{ item.preco.toFixed(2).replace('.', ',') }}
+              {{ getPriceLabel(item) }}
             </p>
             <div class="mt-2 flex gap-2">
               <button
@@ -715,7 +727,7 @@
                   :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
                   class="text-xs"
                 >
-                  Quantidade
+                  Quantidade em estoque
                 </p>
                 <p
                   :class="theme === 'white' ? 'text-black' : 'text-white'"
@@ -728,10 +740,24 @@
           </div>
 
           <p
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
+            :class="[
+              theme === 'white' ? 'text-amber-600' : 'text-pink-300',
+              isSobConsultaProduct(selectedProduct)
+                ? 'cursor-pointer hover:opacity-70 transition-opacity'
+                : '',
+            ]"
             class="text-3xl font-bold mb-6"
+            @click="
+              isSobConsultaProduct(selectedProduct) &&
+              (addToCart(selectedProduct), (showCartModal = true))
+            "
+            :title="
+              isSobConsultaProduct(selectedProduct)
+                ? 'Clique para adicionar ao carrinho'
+                : ''
+            "
           >
-            R$ {{ selectedProduct.preco.toFixed(2).replace('.', ',') }}
+            {{ getPriceLabel(selectedProduct) }}
           </p>
 
           <button
@@ -824,6 +850,29 @@
           </button>
         </div>
 
+        <label
+          v-if="cartItems.length > 0"
+          :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+          class="block text-sm font-semibold mb-2"
+        >
+          Seu nome
+        </label>
+        <input
+          v-if="cartItems.length > 0"
+          v-model="cartName"
+          type="text"
+          placeholder="Digite seu nome"
+          :class="
+            theme === 'white'
+              ? 'bg-gray-50 text-black border-gray-300'
+              : 'bg-[#0a0c10] text-white border-gray-600'
+          "
+          class="w-full px-3 py-2 border rounded-lg mb-4"
+        />
+        <p v-if="cartNameError" class="text-red-500 text-xs mb-4">
+          {{ cartNameError }}
+        </p>
+
         <div v-if="cartItems.length === 0" class="py-10 text-center">
           <p :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'">
             Seu carrinho está vazio. Use o botão + nos produtos para montar sua
@@ -836,42 +885,79 @@
             v-for="item in cartItems"
             :key="item.id"
             :class="theme === 'white' ? 'bg-gray-50' : 'bg-[#0a0c10]'"
-            class="rounded-xl p-3 flex items-start gap-3"
+            class="rounded-xl p-3"
           >
-            <img
-              :src="item.image"
-              alt=""
-              class="w-16 h-16 rounded object-cover"
-            />
-            <div class="flex-1 min-w-0">
-              <p
-                :class="theme === 'white' ? 'text-black' : 'text-white'"
-                class="font-semibold text-sm truncate"
+            <div class="flex items-start gap-3 mb-3">
+              <img
+                :src="item.image"
+                alt=""
+                class="w-16 h-16 rounded object-cover"
+              />
+              <div class="flex-1 min-w-0">
+                <p
+                  :class="theme === 'white' ? 'text-black' : 'text-white'"
+                  class="font-semibold text-sm truncate"
+                >
+                  {{ item.nome }}
+                </p>
+                <p
+                  :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
+                  class="text-xs"
+                >
+                  {{ item.categoria }} • {{ item.codigo || 'Sem código' }} •
+                  {{ item.ml || '-' }}
+                </p>
+                <p
+                  :class="
+                    theme === 'white' ? 'text-amber-600' : 'text-pink-300'
+                  "
+                  class="text-sm font-bold"
+                >
+                  {{ getPriceLabel(item) }}
+                </p>
+              </div>
+              <button
+                @click="removeFromCart(item.id)"
+                :class="theme === 'white' ? 'text-red-600' : 'text-red-400'"
+                class="p-1"
+                title="Remover"
               >
-                {{ item.nome }}
-              </p>
-              <p
-                :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
-                class="text-xs"
-              >
-                {{ item.categoria }} • {{ item.codigo || 'Sem código' }} •
-                {{ item.ml || '-' }}
-              </p>
-              <p
-                :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
-                class="text-sm font-bold"
-              >
-                R$ {{ formatPrice(item.preco) }}
-              </p>
+                <span class="material-symbols-outlined">delete</span>
+              </button>
             </div>
-            <button
-              @click="removeFromCart(item.id)"
-              :class="theme === 'white' ? 'text-red-600' : 'text-red-400'"
-              class="p-1"
-              title="Remover"
+
+            <div
+              class="flex items-center gap-2 bg-gray-200/50 dark:bg-gray-700/30 p-2 rounded"
             >
-              <span class="material-symbols-outlined">delete</span>
-            </button>
+              <label
+                :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+                class="text-xs font-semibold"
+              >
+                Qtd:
+              </label>
+              <input
+                :value="cartQuantities[item.id] || 0"
+                @input="updateCartQuantity(item.id, $event.target.value)"
+                type="number"
+                min="0"
+                :max="isSobConsultaProduct(item) ? 999 : item.quantidade || 999"
+                :class="
+                  theme === 'white'
+                    ? 'bg-white text-black border-gray-300'
+                    : 'bg-[#0a0c10] text-white border-gray-600'
+                "
+                class="w-16 px-2 py-1 border rounded text-center text-sm"
+              />
+              <span
+                v-if="
+                  !isSobConsultaProduct(item) &&
+                  (cartQuantities[item.id] || 0) > (item.quantidade || 999)
+                "
+                class="text-xs text-red-500"
+              >
+                Máx: {{ item.quantidade || 999 }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -886,7 +972,7 @@
             :class="theme === 'white' ? 'text-amber-700' : 'text-pink-300'"
             class="text-xl font-bold"
           >
-            R$ {{ formatPrice(cartTotal) }}
+            {{ cartTotalLabel }}
           </span>
         </div>
 
@@ -904,8 +990,8 @@
             Limpar carrinho
           </button>
           <button
-            @click="openContactModal(null, 'cart')"
-            :disabled="cartItems.length === 0"
+            @click="sendCartMessage"
+            :disabled="cartItems.length === 0 || !isCartValid"
             :class="
               theme === 'white'
                 ? 'flex-1 px-4 py-2 bg-sky-100 text-sky-800 rounded-full disabled:opacity-50'
@@ -918,89 +1004,11 @@
         </div>
       </div>
     </div>
-
-    <!-- Contact Name Modal -->
-    <div
-      v-if="showContactModal"
-      class="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4"
-      @click="closeContactModal"
-    >
-      <div
-        @click.stop
-        :class="theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]'"
-        class="rounded-2xl w-full max-w-md p-6"
-      >
-        <h3
-          :class="theme === 'white' ? 'text-black' : 'text-white'"
-          class="text-xl font-semibold mb-2"
-        >
-          Entrar em contato
-        </h3>
-        <p
-          :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
-          class="text-sm mb-4"
-        >
-          Informe seu nome para enviar a mensagem sobre
-          {{
-            contactMode === 'cart'
-              ? `${cartItems.length} produto(s) no carrinho`
-              : contactTargetProduct?.nome || 'o produto'
-          }}.
-        </p>
-
-        <label
-          :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
-          class="block text-sm font-semibold mb-2"
-        >
-          Seu nome
-        </label>
-        <input
-          v-model="contactName"
-          type="text"
-          placeholder="Digite seu nome"
-          :class="
-            theme === 'white'
-              ? 'bg-gray-50 text-black border-gray-300'
-              : 'bg-[#0a0c10] text-white border-gray-600'
-          "
-          class="w-full px-3 py-2 border rounded-lg mb-2"
-          @keyup.enter="submitContact"
-        />
-        <p v-if="contactNameError" class="text-red-500 text-xs mb-4">
-          {{ contactNameError }}
-        </p>
-
-        <div class="flex gap-2">
-          <button
-            @click="closeContactModal"
-            :class="
-              theme === 'white'
-                ? 'flex-1 px-4 py-2 bg-gray-200 text-black rounded-full'
-                : 'flex-1 px-4 py-2 bg-gray-700 text-white rounded-full'
-            "
-            class="text-sm font-semibold"
-          >
-            Cancelar
-          </button>
-          <button
-            @click="submitContact"
-            :class="
-              theme === 'white'
-                ? 'flex-1 px-4 py-2 bg-sky-100 text-sky-800 rounded-full'
-                : 'flex-1 px-4 py-2 bg-sky-400 text-[#0a0c10] rounded-full'
-            "
-            class="text-sm font-semibold"
-          >
-            Continuar
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, inject, computed, onMounted } from 'vue';
+import { ref, inject, computed, onMounted, watch } from 'vue';
 
 const emit = defineEmits(['back']);
 const theme = inject('theme');
@@ -1047,6 +1055,11 @@ const contactTargetProduct = ref(null);
 const contactMode = ref('product');
 const contactName = ref('');
 const contactNameError = ref('');
+const contactQuantity = ref(1);
+const contactQuantityError = ref('');
+const cartName = ref('');
+const cartNameError = ref('');
+const cartQuantities = ref({});
 const cartItems = ref([]);
 const SELLER_PHONES = ['5511947758048', '5511970489098'];
 const CONTACT_COMPLIMENTS = [
@@ -1097,10 +1110,31 @@ function clearFilters() {
   filterML.value = '';
 }
 
+function isNumericPrice(price) {
+  return typeof price === 'number' && Number.isFinite(price);
+}
+
 function formatPrice(price) {
   return Number(price || 0)
     .toFixed(2)
     .replace('.', ',');
+}
+
+function getPriceLabel(product) {
+  if (!product) return 'Sob Consulta';
+
+  if (isNumericPrice(product.preco)) {
+    return `R$ ${formatPrice(product.preco)}`;
+  }
+
+  const raw = product.precoRaw?.toString().trim() || '';
+  return raw || 'Sob Consulta';
+}
+
+function isSobConsultaProduct(product) {
+  if (!product) return false;
+  if (product.sobConsulta === true) return true;
+  return getPriceLabel(product).toLowerCase() === 'sob consulta';
 }
 
 function getRandomSellerPhone() {
@@ -1115,9 +1149,22 @@ function getRandomCompliment() {
 
 const cartTotal = computed(() => {
   return cartItems.value.reduce(
-    (sum, item) => sum + Number(item.preco || 0),
+    (sum, item) => sum + (isNumericPrice(item.preco) ? item.preco : 0),
     0,
   );
+});
+
+const cartHasNumericPrices = computed(() => {
+  return cartItems.value.some((item) => isNumericPrice(item.preco));
+});
+
+const cartTotalLabel = computed(() => {
+  if (!cartHasNumericPrices.value) return 'Sob Consulta';
+  return `R$ ${formatPrice(cartTotal.value)}`;
+});
+
+const isCartValid = computed(() => {
+  return cartName.value.trim() !== '';
 });
 
 function isInCart(product) {
@@ -1131,6 +1178,7 @@ function addToCart(product) {
 
 function removeFromCart(productId) {
   cartItems.value = cartItems.value.filter((item) => item.id !== productId);
+  delete cartQuantities.value[productId];
 }
 
 function toggleCartItem(product) {
@@ -1144,6 +1192,76 @@ function toggleCartItem(product) {
 
 function clearCart() {
   cartItems.value = [];
+  cartQuantities.value = {};
+  cartName.value = '';
+  cartNameError.value = '';
+}
+
+function updateCartQuantity(itemId, value) {
+  const qty = parseInt(value) || 0;
+  cartQuantities.value[itemId] = qty;
+}
+
+function sendCartMessage() {
+  const sanitizedName = cartName.value?.trim();
+
+  if (!sanitizedName) {
+    cartNameError.value = 'Por favor, informe seu nome.';
+    return;
+  }
+
+  cartNameError.value = '';
+
+  if (cartName.value === SPECIAL_TRIGGER_NAME) {
+    const sellerPhone = getRandomSellerPhone();
+    const url = `https://wa.me/${sellerPhone}?text=${encodeURIComponent(SPECIAL_BIRTHDAY_MESSAGE)}`;
+    window.open(url, '_blank');
+    closeCartModal();
+    return;
+  }
+
+  const compliment = getRandomCompliment();
+  const message = [
+    `Olá, meu nome é ${sanitizedName}. Eu vim pelo site https://besbeauty.netlify.app/ (${compliment}) e tenho interesse nesses produtos:`,
+    '',
+    ...cartItems.value.flatMap((item, index) => {
+      const quantity = cartQuantities.value[item.id] || 0;
+      const isSobConsulta = isSobConsultaProduct(item);
+      const hasQuantity = quantity > 0;
+
+      const lines = [
+        `${index + 1}. ${item.nome || '-'}`,
+        `Categoria: ${item.categoria || '-'}`,
+        `Código: ${item.codigo || '-'}`,
+        `ML: ${item.ml || '-'}`,
+      ];
+
+      if (isSobConsulta && hasQuantity) {
+        lines.push(`Vocês têm ${quantity} unidade(s) disponível(is)?`);
+      } else if (!isSobConsulta && hasQuantity) {
+        lines.push(`Quantidade desejada: ${quantity}`);
+      }
+
+      lines.push(`Preço: ${getPriceLabel(item)}`);
+      lines.push('');
+
+      return lines;
+    }),
+    cartHasNumericPrices.value
+      ? `Total parcial (itens com preço informado): R$ ${formatPrice(cartTotal.value)}`
+      : 'Total da lista: Sob Consulta',
+  ].join('\n');
+
+  const sellerPhone = getRandomSellerPhone();
+  const url = `https://wa.me/${sellerPhone}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+  closeCartModal();
+}
+
+function closeCartModal() {
+  showCartModal.value = false;
+  cartName.value = '';
+  cartNameError.value = '';
 }
 
 function openContactModal(product = null, mode = 'product') {
@@ -1153,6 +1271,8 @@ function openContactModal(product = null, mode = 'product') {
   contactTargetProduct.value = product;
   contactName.value = '';
   contactNameError.value = '';
+  contactQuantity.value = 1;
+  contactQuantityError.value = '';
   showContactModal.value = true;
 }
 
@@ -1162,9 +1282,11 @@ function closeContactModal() {
   contactMode.value = 'product';
   contactName.value = '';
   contactNameError.value = '';
+  contactQuantity.value = 1;
+  contactQuantityError.value = '';
 }
 
-function contactSeller(product, customerName, mode = 'product') {
+function contactSeller(product, customerName, mode = 'product', quantity = 1) {
   const sanitizedName = customerName?.trim();
 
   if (!sanitizedName) return;
@@ -1180,6 +1302,14 @@ function contactSeller(product, customerName, mode = 'product') {
     return;
   }
 
+  if (mode === 'product' && isSobConsultaProduct(product)) {
+    const message = `Olá, meu nome é ${sanitizedName}, gostaria de saber o valor do ${product.nome}`;
+    const sellerPhone = getRandomSellerPhone();
+    const url = `https://wa.me/${sellerPhone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+    return;
+  }
+
   const compliment = getRandomCompliment();
   const message =
     mode === 'cart'
@@ -1191,10 +1321,12 @@ function contactSeller(product, customerName, mode = 'product') {
             `Categoria: ${item.categoria || '-'}`,
             `Código: ${item.codigo || '-'}`,
             `ML: ${item.ml || '-'}`,
-            `Preço: R$ ${formatPrice(item.preco)}`,
+            `Preço: ${getPriceLabel(item)}`,
             '',
           ]),
-          `Total da lista: R$ ${formatPrice(cartTotal.value)}`,
+          cartHasNumericPrices.value
+            ? `Total parcial (itens com preço informado): R$ ${formatPrice(cartTotal.value)}`
+            : 'Total da lista: Sob Consulta',
         ].join('\n')
       : [
           `Olá, meu nome é ${sanitizedName}. Eu vim pelo site https://besbeauty.netlify.app/ (${compliment}) e estou interessado nesse ${product.nome}.`,
@@ -1203,7 +1335,8 @@ function contactSeller(product, customerName, mode = 'product') {
           `Código: ${product.codigo || '-'}`,
           `Nome: ${product.nome || '-'}`,
           `ML: ${product.ml || '-'}`,
-          `Preço: R$ ${formatPrice(product.preco)}`,
+          `Quantidade desejada: ${quantity}`,
+          `Preço: ${getPriceLabel(product)}`,
         ].join('\n');
 
   const sellerPhone = getRandomSellerPhone();
@@ -1221,7 +1354,30 @@ function submitContact() {
   }
 
   contactNameError.value = '';
-  contactSeller(contactTargetProduct.value, typedName, contactMode.value);
+
+  if (
+    contactMode.value === 'product' &&
+    !isSobConsultaProduct(contactTargetProduct.value)
+  ) {
+    const qty = parseInt(contactQuantity.value) || 1;
+    const maxQty = contactTargetProduct.value?.quantidade || 1;
+    if (qty < 1) {
+      contactQuantityError.value = 'Quantidade deve ser pelo menos 1.';
+      return;
+    }
+    if (qty > maxQty) {
+      contactQuantityError.value = `Quantidade máxima em estoque: ${maxQty}`;
+      return;
+    }
+    contactQuantityError.value = '';
+  }
+
+  contactSeller(
+    contactTargetProduct.value,
+    typedName,
+    contactMode.value,
+    contactQuantity.value,
+  );
   closeContactModal();
 }
 
@@ -1235,7 +1391,11 @@ const filteredProducts = computed(() => {
       return false;
 
     // Price range
-    if (p.preco < priceMin.value || p.preco > priceMax.value) return false;
+    if (
+      isNumericPrice(p.preco) &&
+      (p.preco < priceMin.value || p.preco > priceMax.value)
+    )
+      return false;
 
     // Gender filters
     if (filterFeminino.value && p.genero?.toLowerCase() !== 'feminino')
@@ -1325,7 +1485,9 @@ async function getProducts() {
         codigo: p.codigo || '',
         nome: p.nome || 'Sem nome',
         ml: p.ml || '',
-        preco: parseFloat(p.preco) || 0,
+        preco: isNumericPrice(p.preco) ? p.preco : null,
+        precoRaw: p.preco_raw?.toString().trim() || '',
+        sobConsulta: p.sob_consulta === true,
         quantidade: p.quantidade || 0,
         destaque: p.destaque === 'Sim' || p.destaque === true,
         image: p.image,
@@ -1341,6 +1503,18 @@ async function getProducts() {
 
 onMounted(() => {
   getProducts();
+  // Carregar nome salvo do localStorage
+  const savedName = localStorage.getItem('cartUserName');
+  if (savedName) {
+    cartName.value = savedName;
+  }
+});
+
+// Salvar nome no localStorage quando mudar
+watch(cartName, (newName) => {
+  if (newName.trim()) {
+    localStorage.setItem('cartUserName', newName);
+  }
 });
 </script>
 
