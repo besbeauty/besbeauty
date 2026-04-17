@@ -961,18 +961,6 @@
           </button>
 
           <button
-            @click="showCartModal = true"
-            :class="
-              theme === 'white'
-                ? 'w-full px-4 py-3 mb-3 bg-sky-100 text-sky-800 rounded-full'
-                : 'w-full px-4 py-3 mb-3 bg-sky-400 text-[#0a0c10] rounded-full'
-            "
-            class="font-semibold"
-          >
-            Ver carrinho e enviar lista
-          </button>
-
-          <button
             @click="selectedProduct = null"
             :class="
               theme === 'white'
@@ -991,14 +979,14 @@
       @click="showCartModal = true"
       :class="
         theme === 'white'
-          ? 'fixed bottom-5 right-5 z-40 bg-sky-100 text-sky-800'
-          : 'fixed bottom-5 right-5 z-40 bg-sky-400 text-[#0a0c10]'
+          ? 'fixed bottom-6 right-6 z-50 bg-sky-100 text-sky-800'
+          : 'fixed bottom-6 right-6 z-50 bg-sky-400 text-[#0a0c10]'
       "
-      class="rounded-full shadow-lg px-4 py-3 flex items-center gap-2 font-semibold"
+      class="rounded-full shadow-lg p-4 flex items-center gap-2 font-semibold transition-transform hover:scale-110"
       title="Abrir carrinho"
     >
-      <span class="material-symbols-outlined">shopping_cart</span>
-      <span>{{ cartTotalQuantity }}</span>
+      <span class="material-symbols-outlined text-2xl">shopping_cart</span>
+      <span class="text-lg">{{ cartTotalQuantity }}</span>
     </button>
 
     <!-- Cart Modal -->
@@ -1199,6 +1187,31 @@
         </div>
       </div>
     </div>
+
+    <!-- Footer -->
+    <footer
+      :class="theme === 'white' ? 'bg-[#f3f3f3] border-t border-gray-300' : 'bg-[#0a0c10] border-t border-gray-700'"
+      class="app-footer flex flex-col items-center gap-8 w-full py-8 px-6"
+    >
+      <div
+        class="w-full h-[1px] max-w-screen-xl"
+        :class="theme === 'white' ? 'bg-gray-300' : 'bg-gray-700'"
+      ></div>
+      <div class="text-center space-y-2">
+        <p
+          :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
+          class="font-sans text-xs tracking-widest uppercase font-semibold"
+        >
+          2026 — Made by -A.
+        </p>
+        <p
+          :class="theme === 'white' ? 'text-gray-500' : 'text-gray-500'"
+          class="font-serif text-[11px] italic"
+        >
+          {{ randomMessage }}
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -1210,6 +1223,39 @@ import { scale } from '@cloudinary/url-gen/actions/resize';
 const emit = defineEmits(['back']);
 const theme = inject('theme');
 const toggleTheme = inject('toggleTheme');
+
+// Messages for footer
+const messages = [
+  'Hey, bitches.',
+  'Miss me?',
+  'I see everything.',
+  'Secrets have a way of coming out.',
+  'You should be more careful.',
+  'Did you really think no one was watching?',
+  'Some secrets are meant to stay buried.',
+  'Tick tock.',
+  'The truth always finds a way.',
+  'Careful who you trust.',
+  'I know what you did.',
+  'You can\'t hide forever.',
+  'Every move you make... I see it.',
+  'Lying is easy. Getting away with it isn\'t.',
+  'Not everyone is who they seem.',
+  'Do you feel watched yet?',
+  'The game has already begun.',
+  'You\'re closer to the truth than you think.',
+  'But are you ready for it?',
+  'Some puzzles aren\'t meant to be solved.',
+  'Maybe the real question is... who is A?',
+  'XOXO.',
+];
+
+const randomMessage = ref('');
+
+function getRandomMessage() {
+  const index = Math.floor(Math.random() * messages.length);
+  return messages[index];
+}
 
 // All products data
 const allProducts = ref([]);
@@ -1826,6 +1872,9 @@ onMounted(() => {
   if (savedName) {
     cartName.value = savedName;
   }
+
+  // Set random message on mount
+  randomMessage.value = getRandomMessage();
 });
 
 // Initialize scroll positions when products load
