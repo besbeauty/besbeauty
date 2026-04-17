@@ -998,7 +998,7 @@
       title="Abrir carrinho"
     >
       <span class="material-symbols-outlined">shopping_cart</span>
-      <span>{{ cartItems.length }}</span>
+      <span>{{ cartTotalQuantity }}</span>
     </button>
 
     <!-- Cart Modal -->
@@ -1017,7 +1017,7 @@
             :class="theme === 'white' ? 'text-black' : 'text-white'"
             class="text-2xl font-semibold"
           >
-            Carrinho ({{ cartItems.length }})
+            Carrinho ({{ cartTotalQuantity }})
           </h3>
           <button
             @click="showCartModal = false"
@@ -1380,6 +1380,10 @@ const cartHasNumericPrices = computed(() => {
 const cartTotalLabel = computed(() => {
   if (!cartHasNumericPrices.value) return 'Sob Consulta';
   return `R$ ${formatPrice(cartTotal.value)}`;
+});
+
+const cartTotalQuantity = computed(() => {
+  return Object.values(cartQuantities.value).reduce((sum, qty) => sum + qty, 0);
 });
 
 const isCartValid = computed(() => {
