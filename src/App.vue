@@ -7,8 +7,8 @@
 
 <script setup>
 import { ref, computed, provide } from 'vue';
-import HomeView from './HomeView.vue';
-import CatalogView from './CatalogView.vue';
+import HomeView from './pages/HomeView.vue';
+import CatalogView from './pages/CatalogView.vue';
 
 const view = ref('home');
 const theme = ref('white'); // default

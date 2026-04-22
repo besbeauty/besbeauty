@@ -1369,7 +1369,6 @@ function buildImageUrl(publicId, width) {
     .format('auto')
     .quality('auto')
     .toURL();
-  console.log(`[Image] publicId: ${publicId} -> url: ${url}`);
   return url;
 }
 
@@ -1888,12 +1887,10 @@ watch(allProducts, () => {
 
 // Rastrear carregamento de imagens
 function onImageLoad(imageId) {
-  console.log(`[ImageLoad] Success: ${imageId}`);
   imageLoadingState.value[imageId] = true;
 }
 
 function onImageError(imageId) {
-  console.error(`[ImageError] Failed: ${imageId}`);
   imageLoadingState.value[imageId] = true;
   failedImages.value[imageId] = true;
 }
