@@ -36,6 +36,9 @@ jobs:
           VITE_PRIMARY_SHEET_ID: ${{ secrets.VITE_PRIMARY_SHEET_ID }}
           VITE_FALLBACK_GOOGLE_API_KEY: ${{ secrets.VITE_FALLBACK_GOOGLE_API_KEY }}
           VITE_FALLBACK_SHEET_ID: ${{ secrets.VITE_FALLBACK_SHEET_ID }}
+          VITE_SELLER_PASSWORD: ${{ secrets.VITE_SELLER_PASSWORD }}
+          VITE_GOOGLE_MAPS_KEY: ${{ secrets.VITE_GOOGLE_MAPS_KEY }}
+          VITE_SELLER_CACHE_DURATION_HOURS: ${{ secrets.VITE_SELLER_CACHE_DURATION_HOURS }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
