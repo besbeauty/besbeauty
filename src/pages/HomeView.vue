@@ -381,12 +381,10 @@ const selectedVendor = ref(null);
 
 // Load name from localStorage on mount
 onMounted(() => {
-  console.log('[HomeView] onMounted');
   const savedName = localStorage.getItem('contactUserName');
   if (savedName) {
     contactName.value = savedName;
   }
-  console.log('[HomeView] randomMessage:', randomMessage.value);
 });
 
 // Save name to localStorage when it changes

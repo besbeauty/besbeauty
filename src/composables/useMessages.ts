@@ -37,7 +37,6 @@ function getRandomMessage() {
 export function useMessages() {
   // Initialize only once
   if (!initialized) {
-    console.log('[useMessages] Initializing random message');
     randomMessage.value = getRandomMessage();
     initialized = true;
   }

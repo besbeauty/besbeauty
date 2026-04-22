@@ -13,9 +13,6 @@ export function useLazyLoad() {
             const src = img.getAttribute('data-src');
 
             if (src) {
-              console.log(
-                `[LazyLoad] Loading image: ${src.substring(0, 50)}...`,
-              );
               img.src = src;
               observer.value?.unobserve(img);
             }

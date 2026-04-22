@@ -87,11 +87,19 @@ Exemplo: Eu corrigir código
 [HomeView] onMounted
 [HomeView] randomMessage: "{message}"
 [CatalogView] Starting getProducts...
-[CatalogView] SHEET_ID: configured
-[CatalogView] API_KEY: configured
-[CatalogView] Fetching from: https://sheets.googleapis.com/...
-[CatalogView] Response status: 200
-[CatalogView] Sheet data received, rows: N
+[CatalogView] Trying primary sheet: configured
+[CatalogView] Trying primary api key: configured
+[CatalogView] Fetching primary from: https://sheets.googleapis.com/...
+[CatalogView] primary response status: 200
+[CatalogView] primary sheet data received, rows: N
+[CatalogView] Using primary sheet as source
+[CatalogView] Failed to load primary sheet: {error message}
+[CatalogView] Trying fallback sheet: configured
+[CatalogView] Trying fallback api key: configured
+[CatalogView] Fetching fallback from: https://sheets.googleapis.com/...
+[CatalogView] fallback response status: 200
+[CatalogView] fallback sheet data received, rows: N
+[CatalogView] Using fallback sheet as source
 [CatalogView] Products loaded successfully: N items
 [CatalogView] Image loaded: {imageId}
 [CatalogView] Image failed to load: {imageId}
@@ -103,14 +111,18 @@ Exemplo: Eu corrigir código
 **Desenvolvimento (.env.local):**
 
 ```
-VITE_SHEET_ID=tua_sheet_id_aqui
-VITE_GOOGLE_API_KEY=tua_api_key_aqui
+VITE_PRIMARY_SHEET_ID=tua_sheet_id_principal
+VITE_PRIMARY_GOOGLE_API_KEY=tua_api_key_principal
+VITE_FALLBACK_SHEET_ID=tua_sheet_id_fallback
+VITE_FALLBACK_GOOGLE_API_KEY=tua_api_key_fallback
 ```
 
 **Produção (GitHub Secrets):**
 
-- `VITE_SHEET_ID`
-- `VITE_GOOGLE_API_KEY`
+- `VITE_PRIMARY_SHEET_ID`
+- `VITE_PRIMARY_GOOGLE_API_KEY`
+- `VITE_FALLBACK_SHEET_ID`
+- `VITE_FALLBACK_GOOGLE_API_KEY`
 
 ### Git Status
 

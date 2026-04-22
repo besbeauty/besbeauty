@@ -331,7 +331,7 @@
     >
       <div
         :class="theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]'"
-        class="rounded-xl p-6 w-full max-w-sm"
+        class="rounded-xl p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto"
       >
         <div class="flex items-center gap-3 mb-4">
           <span class="material-symbols-outlined text-2xl text-red-500"
@@ -346,7 +346,7 @@
         </div>
         <p
           :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
-          class="mb-6"
+          class="mb-6 break-words whitespace-pre-wrap"
         >
           {{ errorMessage || 'Não conseguimos carregar os produtos.' }}
         </p>
@@ -1679,71 +1679,197 @@ function endDrag() {
   dragElement.value = null;
 }
 
+function getEnvValue(envKey, defineKey) {
+  const envValue = import.meta.env[envKey];
+  if (envValue && envValue !== 'undefined') {
+    return envValue;
+  }
+
+  if (envKey === 'VITE_PRIMARY_SHEET_ID') {
+    const legacyEnvValue = import.meta.env.VITE_SHEET_ID;
+    if (legacyEnvValue && legacyEnvValue !== 'undefined') {
+      return legacyEnvValue;
+    }
+  }
+
+  if (envKey === 'VITE_PRIMARY_GOOGLE_API_KEY') {
+    const legacyEnvValue = import.meta.env.VITE_GOOGLE_API_KEY;
+    if (legacyEnvValue && legacyEnvValue !== 'undefined') {
+      return legacyEnvValue;
+    }
+  }
+
+  if (defineKey === '__VITE_PRIMARY_SHEET_ID__') {
+    return typeof __VITE_PRIMARY_SHEET_ID__ !== 'undefined'
+      ? __VITE_PRIMARY_SHEET_ID__
+      : '';
+  }
+
+  if (defineKey === '__VITE_PRIMARY_GOOGLE_API_KEY__') {
+    return typeof __VITE_PRIMARY_GOOGLE_API_KEY__ !== 'undefined'
+      ? __VITE_PRIMARY_GOOGLE_API_KEY__
+      : '';
+  }
+
+  if (defineKey === '__VITE_FALLBACK_SHEET_ID__') {
+    return typeof __VITE_FALLBACK_SHEET_ID__ !== 'undefined'
+      ? __VITE_FALLBACK_SHEET_ID__
+      : '';
+  }
+
+  if (defineKey === '__VITE_FALLBACK_GOOGLE_API_KEY__') {
+    return typeof __VITE_FALLBACK_GOOGLE_API_KEY__ !== 'undefined'
+      ? __VITE_FALLBACK_GOOGLE_API_KEY__
+      : '';
+  }
+
+  return '';
+}
+
+function getSheetSources() {
+  const sources = [
+    {
+      label: 'primary',
+      sheetId: getEnvValue('VITE_PRIMARY_SHEET_ID', '__VITE_PRIMARY_SHEET_ID__'),
+      apiKey: getEnvValue(
+        'VITE_PRIMARY_GOOGLE_API_KEY',
+        '__VITE_PRIMARY_GOOGLE_API_KEY__',
+      ),
+    },
+    {
+      label: 'fallback',
+      sheetId: getEnvValue(
+        'VITE_FALLBACK_SHEET_ID',
+        '__VITE_FALLBACK_SHEET_ID__',
+      ),
+      apiKey: getEnvValue(
+        'VITE_FALLBACK_GOOGLE_API_KEY',
+        '__VITE_FALLBACK_GOOGLE_API_KEY__',
+      ),
+    },
+  ];
+
+  return sources.filter(
+    (source) =>
+      source.sheetId &&
+      source.sheetId !== 'undefined' &&
+      source.apiKey &&
+      source.apiKey !== 'undefined' &&
+      source.apiKey !== 'YOUR_PUBLIC_API_KEY_HERE' &&
+      source.apiKey !== 'YOUR_API_KEY_HERE',
+  );
+}
+
+function maskApiKey(apiKey) {
+  if (!apiKey) return 'missing';
+  if (apiKey.length <= 8) return apiKey;
+  return `${apiKey.slice(0, 6)}...${apiKey.slice(-4)}`;
+}
+
+async function fetchSheetRows(source) {
+  const encodedRange = encodeURIComponent('Catalogo!A:J');
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${source.sheetId}/values/${encodedRange}?key=${source.apiKey}`;
+
+  console.log('[CatalogView] Fetching source', {
+    label: source.label,
+    sheetId: source.sheetId,
+    apiKey: maskApiKey(source.apiKey),
+    range: 'Catalogo!A:J',
+  });
+
+  const response = await fetch(url);
+  let responseBody = null;
+
+  try {
+    responseBody = await response.json();
+  } catch {
+    responseBody = null;
+  }
+
+  console.log('[CatalogView] Source response', {
+    label: source.label,
+    status: response.status,
+    statusText: response.statusText,
+    error: responseBody?.error || null,
+  });
+
+  if (response.status === 403) {
+    throw new Error(`HTTP 403: acesso negado na planilha ${source.label}`);
+  }
+
+  if (!response.ok) {
+    const apiMessage =
+      responseBody?.error?.message || response.statusText || 'erro desconhecido';
+    throw new Error(
+      `HTTP ${response.status}: ${apiMessage} na planilha ${source.label}`,
+    );
+  }
+  const sheetData = responseBody || {};
+
+  if (sheetData.error) {
+    throw new Error(`API Error: ${sheetData.error.message}`);
+  }
+
+  const rows = sheetData.values || [];
+  return rows;
+}
+
 async function getProducts() {
   try {
-    console.log('[CatalogView] Starting getProducts...');
-
-    // Em desenvolvimento: usa import.meta.env
-    // Em produção (GitHub Pages): usa as constantes globais injetadas pelo Vite
-    const SHEET_ID =
-      import.meta.env.VITE_SHEET_ID ||
-      (typeof __VITE_SHEET_ID__ !== 'undefined' ? __VITE_SHEET_ID__ : '');
-    const API_KEY =
-      import.meta.env.VITE_GOOGLE_API_KEY ||
-      (typeof __VITE_GOOGLE_API_KEY__ !== 'undefined'
-        ? __VITE_GOOGLE_API_KEY__
-        : '');
+    const sheetSources = getSheetSources();
 
     console.log(
-      '[CatalogView] SHEET_ID:',
-      SHEET_ID ? 'configured' : 'NOT CONFIGURED',
-    );
-    console.log(
-      '[CatalogView] API_KEY:',
-      API_KEY ? 'configured' : 'NOT CONFIGURED',
+      '[CatalogView] Sheet sources',
+      sheetSources.map((source) => ({
+        label: source.label,
+        sheetId: source.sheetId,
+        apiKey: maskApiKey(source.apiKey),
+      })),
     );
 
-    if (!SHEET_ID || SHEET_ID === 'undefined' || SHEET_ID === '') {
+    if (sheetSources.length === 0) {
       throw new Error(
-        'SHEET_ID não configurado. Verifique seu .env.local (desenvolvimento) ou configure VITE_SHEET_ID nos Secrets do GitHub.',
+        'Nenhuma planilha configurada. Defina VITE_PRIMARY_SHEET_ID/VITE_PRIMARY_GOOGLE_API_KEY. Para fallback, use VITE_FALLBACK_SHEET_ID/VITE_FALLBACK_GOOGLE_API_KEY.',
       );
     }
 
-    if (
-      !API_KEY ||
-      API_KEY === 'YOUR_PUBLIC_API_KEY_HERE' ||
-      API_KEY === 'YOUR_API_KEY_HERE' ||
-      API_KEY === 'undefined' ||
-      API_KEY === ''
-    ) {
-      throw new Error(
-        'Google API Key não configurada. Configure VITE_GOOGLE_API_KEY nos Secrets do GitHub ou adicione ao .env.local para desenvolvimento.',
-      );
+    let rows = [];
+    let lastError = null;
+
+    for (const source of sheetSources) {
+      try {
+        rows = await fetchSheetRows(source);
+        console.log('[CatalogView] Source selected', source.label);
+        lastError = null;
+        break;
+      } catch (error) {
+        const errorMessage = error?.message || '';
+        const shouldTryFallback =
+          source.label === 'primary' &&
+          (errorMessage.includes('400') ||
+            errorMessage.includes('403') ||
+            errorMessage.includes('HTTP 404') ||
+            errorMessage.includes('Unable to parse range') ||
+            errorMessage.includes('Requested entity was not found') ||
+            errorMessage.includes('access') ||
+            errorMessage.includes('A1'));
+
+        lastError = error;
+
+        console.log('[CatalogView] Source failed', {
+          label: source.label,
+          errorMessage,
+          shouldTryFallback,
+        });
+
+        if (!shouldTryFallback) {
+          throw error;
+        }
+      }
     }
 
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Dados!A:J?key=${API_KEY}`;
-    console.log('[CatalogView] Fetching from:', url.substring(0, 50) + '...');
-
-    const response = await fetch(url);
-    console.log('[CatalogView] Response status:', response.status);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const sheetData = await response.json();
-    console.log(
-      '[CatalogView] Sheet data received, rows:',
-      sheetData.values?.length || 0,
-    );
-
-    if (sheetData.error) {
-      throw new Error(`API Error: ${sheetData.error.message}`);
-    }
-
-    const rows = sheetData.values || [];
-    if (rows.length < 2) {
-      throw new Error('Planilha vazia ou sem dados');
+    if (!rows.length) {
+      throw lastError || new Error('Nenhuma planilha retornou dados válidos');
     }
 
     const data = rows.slice(1).map((row, i) => {
@@ -1778,14 +1904,9 @@ async function getProducts() {
       };
     });
 
-    console.log(
-      '[CatalogView] Products loaded successfully:',
-      data.length,
-      'items',
-    );
     allProducts.value = data;
   } catch (e) {
-    console.error('[CatalogView] Error in getProducts:', e);
+    console.error('[CatalogView] getProducts failed', e);
     showError.value = true;
     errorMessage.value = e.message || 'Erro desconhecido ao carregar produtos';
   } finally {
@@ -1833,12 +1954,10 @@ watch(allProducts, () => {
 
 // Rastrear carregamento de imagens
 function onImageLoad(imageId) {
-  console.log(`[CatalogView] Image loaded: ${imageId}`);
   imageLoadingState.value[imageId] = true;
 }
 
 function onImageError(imageId) {
-  console.error(`[CatalogView] Image failed to load: ${imageId}`);
   imageLoadingState.value[imageId] = true;
   failedImages.value[imageId] = true;
 }
