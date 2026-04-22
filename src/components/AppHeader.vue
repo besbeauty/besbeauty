@@ -44,6 +44,20 @@
           <span class="material-symbols-outlined text-lg">collections</span>
         </button>
         <button
+          v-if="showSellerBtn"
+          @click="$emit('open-seller')"
+          :class="
+            theme === 'white'
+              ? 'bg-amber-100 text-amber-700'
+              : 'bg-pink-900/40 text-pink-300'
+          "
+          class="p-3 rounded-full shadow transition-colors"
+          title="Area de vendedores"
+          aria-label="Abrir area de vendedores"
+        >
+          <span class="material-symbols-outlined text-lg">storefront</span>
+        </button>
+        <button
           v-if="showBackBtn"
           @click="$emit('back')"
           class="p-3 rounded-full"
@@ -81,11 +95,13 @@ const props = defineProps<{
   title: string;
   subtitle?: boolean;
   showCatalogBtn?: boolean;
+  showSellerBtn?: boolean;
   showBackBtn?: boolean;
 }>();
 
 const emit = defineEmits<{
   'open-catalog': [];
+  'open-seller': [];
   back: [];
 }>();
 

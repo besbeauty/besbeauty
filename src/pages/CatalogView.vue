@@ -1,17 +1,9 @@
 <template>
   <div class="w-full min-h-screen overflow-x-hidden">
-    <AppHeader
-      title="Catálogo"
-      subtitle
-      :show-back-btn="true"
-      @back="goHome"
-    />
+    <AppHeader title="Catálogo" subtitle :show-back-btn="true" @back="goHome" />
 
     <!-- Skeleton Loading LinkedIn style -->
-    <div
-      v-if="isLoadingProducts"
-      class="mb-12 pb-6 pt-8 px-[5%] flex flex-col items-center"
-    >
+    <div v-if="isLoadingProducts" class="mb-12 px-4 sm:px-8 lg:px-12 pb-6 pt-8">
       <div
         :class="
           theme === 'white'
@@ -21,97 +13,88 @@
         class="h-8 w-40 rounded mx-auto mb-6 animate-pulse"
       />
 
-      <div class="flex items-center justify-center gap-4 w-full">
-        <div class="w-8 h-8 flex-shrink-0" />
-
-        <div class="w-[70%]">
-          <div
-            class="flex w-fit max-w-full mx-auto gap-4 overflow-x-auto py-4 px-2 scrollbar-thin"
-            :class="
-              theme === 'white' ? 'scrollbar-amber-300' : 'scrollbar-pink-500'
-            "
-          >
-            <div v-for="i in 4" :key="`skeleton-${i}`" class="flex-shrink-0">
+      <div class="relative">
+        <div class="flex gap-4 overflow-x-auto py-4 px-4">
+          <div v-for="i in 4" :key="`skeleton-${i}`" class="flex-shrink-0">
+            <div
+              :class="
+                (theme === 'white'
+                  ? 'bg-gradient-to-br from-amber-50 to-amber-100'
+                  : 'bg-gradient-to-br from-pink-900/20 to-pink-800/30') +
+                ' rounded-xl shadow-lg overflow-hidden w-auto min-w-48 flex flex-col'
+              "
+            >
+              <!-- Skeleton Image -->
               <div
                 :class="
-                  (theme === 'white'
-                    ? 'bg-gradient-to-br from-amber-50 to-amber-100'
-                    : 'bg-gradient-to-br from-pink-900/20 to-pink-800/30') +
-                  ' rounded-xl shadow-lg overflow-hidden w-auto min-w-48 flex flex-col'
+                  theme === 'white'
+                    ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                    : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
                 "
-              >
-                <div
-                  :class="
-                    theme === 'white'
-                      ? 'bg-gradient-to-r from-amber-200 to-amber-100'
-                      : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
-                  "
-                  class="w-full h-40 animate-pulse"
-                />
+                class="w-full h-40 animate-pulse"
+              />
 
-                <div class="flex-1 p-4 flex flex-col justify-between">
-                  <div class="space-y-3">
-                    <div
-                      :class="
-                        theme === 'white'
-                          ? 'bg-gradient-to-r from-amber-200 to-amber-100'
-                          : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
-                      "
-                      class="h-4 w-3/4 rounded animate-pulse"
-                    />
-                    <div
-                      :class="
-                        theme === 'white'
-                          ? 'bg-gradient-to-r from-amber-200 to-amber-100'
-                          : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
-                      "
-                      class="h-3 w-1/2 rounded animate-pulse"
-                    />
-                    <div
-                      :class="
-                        theme === 'white'
-                          ? 'bg-gradient-to-r from-amber-200 to-amber-100'
-                          : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
-                      "
-                      class="h-3 w-2/3 rounded animate-pulse"
-                    />
-                  </div>
+              <!-- Skeleton Content -->
+              <div class="flex-1 p-4 flex flex-col justify-between">
+                <div class="space-y-3">
+                  <div
+                    :class="
+                      theme === 'white'
+                        ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                        : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                    "
+                    class="h-4 w-3/4 rounded animate-pulse"
+                  />
+                  <div
+                    :class="
+                      theme === 'white'
+                        ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                        : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                    "
+                    class="h-3 w-1/2 rounded animate-pulse"
+                  />
+                  <div
+                    :class="
+                      theme === 'white'
+                        ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                        : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                    "
+                    class="h-3 w-2/3 rounded animate-pulse"
+                  />
+                </div>
 
-                  <div class="flex items-end justify-between mt-4">
+                <div class="flex items-end justify-between mt-4">
+                  <div
+                    :class="
+                      theme === 'white'
+                        ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                        : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                    "
+                    class="h-6 w-20 rounded animate-pulse"
+                  />
+                  <div class="flex gap-1">
                     <div
                       :class="
                         theme === 'white'
                           ? 'bg-gradient-to-r from-amber-200 to-amber-100'
                           : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
                       "
-                      class="h-6 w-20 rounded animate-pulse"
+                      class="h-8 w-8 rounded animate-pulse"
                     />
-                    <div class="flex gap-1">
-                      <div
-                        :class="
-                          theme === 'white'
-                            ? 'bg-gradient-to-r from-amber-200 to-amber-100'
-                            : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
-                        "
-                        class="h-8 w-8 rounded animate-pulse"
-                      />
-                      <div
-                        :class="
-                          theme === 'white'
-                            ? 'bg-gradient-to-r from-amber-200 to-amber-100'
-                            : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
-                        "
-                        class="h-8 w-8 rounded animate-pulse"
-                      />
-                    </div>
+                    <div
+                      :class="
+                        theme === 'white'
+                          ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                          : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                      "
+                      class="h-8 w-8 rounded animate-pulse"
+                    />
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="w-8 h-8 flex-shrink-0" />
       </div>
     </div>
 
@@ -192,7 +175,6 @@
                     @error="onImageError(item.id)"
                     class="w-full h-full object-cover relative z-10 lazy-load-img"
                   />
-
                 </div>
                 <!-- Info + Details button -->
                 <div class="flex-1 p-4 flex flex-col justify-between relative">
@@ -331,7 +313,7 @@
     >
       <div
         :class="theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]'"
-        class="rounded-xl p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto"
+        class="rounded-xl p-6 w-full max-w-sm"
       >
         <div class="flex items-center gap-3 mb-4">
           <span class="material-symbols-outlined text-2xl text-red-500"
@@ -346,7 +328,7 @@
         </div>
         <p
           :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
-          class="mb-6 break-words whitespace-pre-wrap"
+          class="mb-6"
         >
           {{ errorMessage || 'Não conseguimos carregar os produtos.' }}
         </p>
@@ -680,7 +662,7 @@
               />
 
               <img
-                :src="getProductImageUrl(item)"
+                :src="item.image"
                 alt=""
                 @load="onImageLoad(`carousel-${item.id}`)"
                 @error="onImageError(`carousel-${item.id}`)"
@@ -1148,17 +1130,28 @@ import AppFooter from '../components/AppFooter.vue';
 import { useCloudinary } from '../composables/useCloudinary';
 import { useMessages } from '../composables/useMessages';
 import { useTheme } from '../composables/useTheme';
-import { useRouter } from 'vue-router';
 
-import { ref, inject, computed, onMounted, watch, onUpdated, nextTick } from 'vue';
+import {
+  ref,
+  inject,
+  computed,
+  onMounted,
+  watch,
+  onUpdated,
+  nextTick,
+} from 'vue';
+import { useRouter } from 'vue-router';
 import { useLazyLoad } from '../composables/useLazyLoad';
 
+const router = useRouter();
 const { buildImageUrl, logoUrl } = useCloudinary();
 const { randomMessage, getRandomMessage } = useMessages();
 const { theme, toggleTheme } = useTheme();
 const { observe } = useLazyLoad();
-const router = useRouter();
-const FALLBACK_IMAGE_ID = 'logo_crop_qoc5ff';
+
+function goHome() {
+  router.push({ name: 'home' });
+}
 
 // All products data
 const allProducts = ref([]);
@@ -1260,18 +1253,47 @@ function clearFilters() {
   filterML.value = '';
 }
 
+function sanitizeImageSource(value) {
+  const raw = (value || '').toString().trim();
+  if (!raw) return '';
+
+  if (raw.startsWith('http://') || raw.startsWith('https://')) {
+    const noQuery = raw.split('?')[0];
+    const match = noQuery.match(
+      /\/image\/upload\/(?:[^/]+\/)*([^./?#]+)(?:\.[a-zA-Z0-9]+)?$/,
+    );
+
+    if (match?.[1]) {
+      try {
+        return decodeURIComponent(match[1]);
+      } catch {
+        return match[1];
+      }
+    }
+
+    return noQuery;
+  }
+
+  return raw.split('?')[0];
+}
+
 function getProductImageUrl(item) {
   // Se a imagem falhou ao carregar ou está vazia, retorna o logo
-  const imageId = item?.imageId?.trim();
+  const imageId = sanitizeImageSource(item.image);
   if (
     !imageId ||
-    failedImages.value[item?.id] ||
-    failedImages.value[`carousel-${item?.id}`] ||
-    failedImages.value[`detail-${item?.id}`] ||
-    failedImages.value[`cart-${item?.id}`]
+    failedImages.value[item.id] ||
+    failedImages.value[`carousel-${item.id}`] ||
+    failedImages.value[`detail-${item.id}`] ||
+    failedImages.value[`cart-${item.id}`]
   ) {
-    return buildImageUrl(FALLBACK_IMAGE_ID, 300);
+    return buildImageUrl('logo_crop_qoc5ff', 300);
   }
+
+  if (imageId.startsWith('http://') || imageId.startsWith('https://')) {
+    return imageId;
+  }
+
   return buildImageUrl(imageId, 300);
 }
 
@@ -1679,152 +1701,89 @@ function endDrag() {
   dragElement.value = null;
 }
 
-function getEnvValue(envKey, defineKey) {
-  const envValue = import.meta.env[envKey];
-  if (envValue && envValue !== 'undefined') {
-    return envValue;
-  }
-
-  if (envKey === 'VITE_PRIMARY_SHEET_ID') {
-    const legacyEnvValue = import.meta.env.VITE_SHEET_ID;
-    if (legacyEnvValue && legacyEnvValue !== 'undefined') {
-      return legacyEnvValue;
-    }
-  }
-
-  if (envKey === 'VITE_PRIMARY_GOOGLE_API_KEY') {
-    const legacyEnvValue = import.meta.env.VITE_GOOGLE_API_KEY;
-    if (legacyEnvValue && legacyEnvValue !== 'undefined') {
-      return legacyEnvValue;
-    }
-  }
-
-  if (defineKey === '__VITE_PRIMARY_SHEET_ID__') {
-    return typeof __VITE_PRIMARY_SHEET_ID__ !== 'undefined'
-      ? __VITE_PRIMARY_SHEET_ID__
-      : '';
-  }
-
-  if (defineKey === '__VITE_PRIMARY_GOOGLE_API_KEY__') {
-    return typeof __VITE_PRIMARY_GOOGLE_API_KEY__ !== 'undefined'
-      ? __VITE_PRIMARY_GOOGLE_API_KEY__
-      : '';
-  }
-
-  if (defineKey === '__VITE_FALLBACK_SHEET_ID__') {
-    return typeof __VITE_FALLBACK_SHEET_ID__ !== 'undefined'
-      ? __VITE_FALLBACK_SHEET_ID__
-      : '';
-  }
-
-  if (defineKey === '__VITE_FALLBACK_GOOGLE_API_KEY__') {
-    return typeof __VITE_FALLBACK_GOOGLE_API_KEY__ !== 'undefined'
-      ? __VITE_FALLBACK_GOOGLE_API_KEY__
-      : '';
-  }
-
-  return '';
-}
-
-function getSheetSources() {
-  const sources = [
-    {
-      label: 'primary',
-      sheetId: getEnvValue('VITE_PRIMARY_SHEET_ID', '__VITE_PRIMARY_SHEET_ID__'),
-      apiKey: getEnvValue(
-        'VITE_PRIMARY_GOOGLE_API_KEY',
-        '__VITE_PRIMARY_GOOGLE_API_KEY__',
-      ),
-    },
-    {
-      label: 'fallback',
-      sheetId: getEnvValue(
-        'VITE_FALLBACK_SHEET_ID',
-        '__VITE_FALLBACK_SHEET_ID__',
-      ),
-      apiKey: getEnvValue(
-        'VITE_FALLBACK_GOOGLE_API_KEY',
-        '__VITE_FALLBACK_GOOGLE_API_KEY__',
-      ),
-    },
-  ];
-
-  return sources.filter(
-    (source) =>
-      source.sheetId &&
-      source.sheetId !== 'undefined' &&
-      source.apiKey &&
-      source.apiKey !== 'undefined' &&
-      source.apiKey !== 'YOUR_PUBLIC_API_KEY_HERE' &&
-      source.apiKey !== 'YOUR_API_KEY_HERE',
-  );
-}
-
-function maskApiKey(apiKey) {
-  if (!apiKey) return 'missing';
-  if (apiKey.length <= 8) return apiKey;
-  return `${apiKey.slice(0, 6)}...${apiKey.slice(-4)}`;
-}
-
-async function fetchSheetRows(source) {
-  const encodedRange = encodeURIComponent('Catalogo!A:J');
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${source.sheetId}/values/${encodedRange}?key=${source.apiKey}`;
-
-  console.log('[CatalogView] Fetching source', {
-    label: source.label,
-    sheetId: source.sheetId,
-    apiKey: maskApiKey(source.apiKey),
-    range: 'Catalogo!A:J',
-  });
-
-  const response = await fetch(url);
-  let responseBody = null;
-
-  try {
-    responseBody = await response.json();
-  } catch {
-    responseBody = null;
-  }
-
-  console.log('[CatalogView] Source response', {
-    label: source.label,
-    status: response.status,
-    statusText: response.statusText,
-    error: responseBody?.error || null,
-  });
-
-  if (response.status === 403) {
-    throw new Error(`HTTP 403: acesso negado na planilha ${source.label}`);
-  }
-
-  if (!response.ok) {
-    const apiMessage =
-      responseBody?.error?.message || response.statusText || 'erro desconhecido';
-    throw new Error(
-      `HTTP ${response.status}: ${apiMessage} na planilha ${source.label}`,
-    );
-  }
-  const sheetData = responseBody || {};
-
-  if (sheetData.error) {
-    throw new Error(`API Error: ${sheetData.error.message}`);
-  }
-
-  const rows = sheetData.values || [];
-  return rows;
-}
-
 async function getProducts() {
   try {
-    const sheetSources = getSheetSources();
+    const TARGET_RANGE = 'Catalogo!A:J';
+    const targetTabName = TARGET_RANGE.split('!')[0];
 
-    console.log(
-      '[CatalogView] Sheet sources',
-      sheetSources.map((source) => ({
-        label: source.label,
-        sheetId: source.sheetId,
-        apiKey: maskApiKey(source.apiKey),
-      })),
+    function resolveEnvValue(envKey, defineKey) {
+      const envValue = import.meta.env[envKey];
+      if (envValue && envValue !== 'undefined') {
+        return envValue;
+      }
+
+      if (envKey === 'VITE_PRIMARY_SHEET_ID') {
+        const legacyEnvValue = import.meta.env.VITE_SHEET_ID;
+        if (legacyEnvValue && legacyEnvValue !== 'undefined') {
+          return legacyEnvValue;
+        }
+      }
+
+      if (envKey === 'VITE_PRIMARY_GOOGLE_API_KEY') {
+        const legacyEnvValue = import.meta.env.VITE_GOOGLE_API_KEY;
+        if (legacyEnvValue && legacyEnvValue !== 'undefined') {
+          return legacyEnvValue;
+        }
+      }
+
+      if (defineKey === '__VITE_PRIMARY_SHEET_ID__') {
+        return typeof __VITE_PRIMARY_SHEET_ID__ !== 'undefined'
+          ? __VITE_PRIMARY_SHEET_ID__
+          : '';
+      }
+
+      if (defineKey === '__VITE_PRIMARY_GOOGLE_API_KEY__') {
+        return typeof __VITE_PRIMARY_GOOGLE_API_KEY__ !== 'undefined'
+          ? __VITE_PRIMARY_GOOGLE_API_KEY__
+          : '';
+      }
+
+      if (defineKey === '__VITE_FALLBACK_SHEET_ID__') {
+        return typeof __VITE_FALLBACK_SHEET_ID__ !== 'undefined'
+          ? __VITE_FALLBACK_SHEET_ID__
+          : '';
+      }
+
+      if (defineKey === '__VITE_FALLBACK_GOOGLE_API_KEY__') {
+        return typeof __VITE_FALLBACK_GOOGLE_API_KEY__ !== 'undefined'
+          ? __VITE_FALLBACK_GOOGLE_API_KEY__
+          : '';
+      }
+
+      return '';
+    }
+
+    const sheetSources = [
+      {
+        label: 'primary',
+        sheetId: resolveEnvValue(
+          'VITE_PRIMARY_SHEET_ID',
+          '__VITE_PRIMARY_SHEET_ID__',
+        ),
+        apiKey: resolveEnvValue(
+          'VITE_PRIMARY_GOOGLE_API_KEY',
+          '__VITE_PRIMARY_GOOGLE_API_KEY__',
+        ),
+      },
+      {
+        label: 'fallback',
+        sheetId: resolveEnvValue(
+          'VITE_FALLBACK_SHEET_ID',
+          '__VITE_FALLBACK_SHEET_ID__',
+        ),
+        apiKey: resolveEnvValue(
+          'VITE_FALLBACK_GOOGLE_API_KEY',
+          '__VITE_FALLBACK_GOOGLE_API_KEY__',
+        ),
+      },
+    ].filter(
+      (source) =>
+        source.sheetId &&
+        source.sheetId !== 'undefined' &&
+        source.apiKey &&
+        source.apiKey !== 'undefined' &&
+        source.apiKey !== 'YOUR_PUBLIC_API_KEY_HERE' &&
+        source.apiKey !== 'YOUR_API_KEY_HERE',
     );
 
     if (sheetSources.length === 0) {
@@ -1836,45 +1795,143 @@ async function getProducts() {
     let rows = [];
     let lastError = null;
 
-    for (const source of sheetSources) {
+    async function getAvailableTabs(sheetId, apiKey) {
+      const metadataUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?fields=sheets.properties.title&key=${apiKey}`;
       try {
-        rows = await fetchSheetRows(source);
-        console.log('[CatalogView] Source selected', source.label);
-        lastError = null;
-        break;
-      } catch (error) {
-        const errorMessage = error?.message || '';
-        const shouldTryFallback =
-          source.label === 'primary' &&
-          (errorMessage.includes('400') ||
-            errorMessage.includes('403') ||
-            errorMessage.includes('HTTP 404') ||
-            errorMessage.includes('Unable to parse range') ||
-            errorMessage.includes('Requested entity was not found') ||
-            errorMessage.includes('access') ||
-            errorMessage.includes('A1'));
-
-        lastError = error;
-
-        console.log('[CatalogView] Source failed', {
-          label: source.label,
-          errorMessage,
-          shouldTryFallback,
+        console.log('[GoogleAPI] Sheets metadata request', {
+          endpoint: 'https://sheets.googleapis.com/v4/spreadsheets/{id}',
+          source: sheetId?.slice(0, 6) || 'unknown',
         });
-
-        if (!shouldTryFallback) {
-          throw error;
+        const metadataResponse = await fetch(metadataUrl);
+        if (!metadataResponse.ok) {
+          return [];
         }
+
+        const metadataBody = await metadataResponse.json();
+        return (metadataBody?.sheets || [])
+          .map((sheet) => sheet?.properties?.title)
+          .filter(Boolean);
+      } catch {
+        return [];
       }
     }
 
-    if (!rows.length) {
-      throw lastError || new Error('Nenhuma planilha retornou dados válidos');
+    for (const source of sheetSources) {
+      const SHEET_ID = source.sheetId;
+      const API_KEY = source.apiKey;
+
+      if (!SHEET_ID || SHEET_ID === 'undefined' || SHEET_ID === '') {
+        lastError = new Error(
+          `SHEET_ID não configurado para ${source.label}. Defina VITE_PRIMARY_SHEET_ID (ou VITE_SHEET_ID legado).`,
+        );
+        continue;
+      }
+
+      if (
+        !API_KEY ||
+        API_KEY === 'YOUR_PUBLIC_API_KEY_HERE' ||
+        API_KEY === 'YOUR_API_KEY_HERE' ||
+        API_KEY === 'undefined' ||
+        API_KEY === ''
+      ) {
+        lastError = new Error(
+          `Google API Key não configurada para ${source.label}. Defina VITE_PRIMARY_GOOGLE_API_KEY (ou VITE_GOOGLE_API_KEY legado).`,
+        );
+        continue;
+      }
+
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(TARGET_RANGE)}?key=${API_KEY}`;
+      console.log('[GoogleAPI] Sheets values request', {
+        endpoint:
+          'https://sheets.googleapis.com/v4/spreadsheets/{id}/values/{range}',
+        source: source.label,
+        range: TARGET_RANGE,
+      });
+
+      const response = await fetch(url);
+
+      let responseBody = null;
+      try {
+        responseBody = await response.json();
+      } catch {
+        responseBody = null;
+      }
+
+      if (!response.ok) {
+        const apiMessage =
+          responseBody?.error?.message ||
+          response.statusText ||
+          'erro desconhecido';
+        const shortSheetId = `${SHEET_ID.slice(0, 8)}...${SHEET_ID.slice(-4)}`;
+        let detailedMessage = apiMessage;
+
+        if (
+          response.status === 400 &&
+          apiMessage.includes('Unable to parse range')
+        ) {
+          const availableTabs = await getAvailableTabs(SHEET_ID, API_KEY);
+          if (availableTabs.length > 0) {
+            detailedMessage = `${apiMessage}. Aba procurada: "${targetTabName}". Abas disponiveis: ${availableTabs.join(', ')}`;
+          } else {
+            detailedMessage = `${apiMessage}. Aba procurada: "${targetTabName}".`;
+          }
+        }
+
+        const sourceError = new Error(
+          `HTTP ${response.status}: ${detailedMessage} na planilha ${source.label} (${shortSheetId})`,
+        );
+
+        const shouldTryFallback =
+          source.label === 'primary' &&
+          (response.status === 400 ||
+            response.status === 403 ||
+            response.status === 404 ||
+            apiMessage.includes('Unable to parse range') ||
+            apiMessage.includes('Requested entity was not found') ||
+            apiMessage.includes('access'));
+
+        lastError = sourceError;
+        if (shouldTryFallback) {
+          continue;
+        }
+
+        throw sourceError;
+      }
+
+      if (responseBody?.error) {
+        const sourceError = new Error(
+          `API Error: ${responseBody.error.message} na planilha ${source.label}`,
+        );
+        lastError = sourceError;
+        if (source.label === 'primary') {
+          continue;
+        }
+        throw sourceError;
+      }
+
+      rows = responseBody?.values || [];
+
+      if (rows.length >= 2) {
+        break;
+      }
+
+      lastError = new Error(
+        `Planilha vazia ou sem dados na fonte ${source.label}`,
+      );
+      rows = [];
+    }
+
+    if (rows.length === 0) {
+      throw lastError || new Error('Planilha vazia ou sem dados');
+    }
+
+    if (rows.length < 2) {
+      throw new Error('Planilha vazia ou sem dados');
     }
 
     const data = rows.slice(1).map((row, i) => {
-      const rawImageId = row[9]?.trim();
-      const imageId = rawImageId || FALLBACK_IMAGE_ID;
+      const rawImageId = row[9]?.toString() || '';
+      const imageRef = sanitizeImageSource(rawImageId) || 'logo_crop_qoc5ff';
       const priceRaw = row[6]?.toString().trim() || '';
       const normalized = priceRaw.toLowerCase();
       const numericCandidate = priceRaw
@@ -1885,7 +1942,6 @@ async function getProducts() {
       const parsed = Number.parseFloat(numericCandidate);
       const hasNumericPrice = Number.isFinite(parsed);
 
-      const imageUrl = buildImageUrl(imageId, 300);
       return {
         id: i,
         tipo: row[0]?.trim() || 'Sem tipo',
@@ -1899,14 +1955,13 @@ async function getProducts() {
         sobConsulta: !priceRaw || normalized === 'sob consulta',
         quantidade: parseInt(row[7]) || 0,
         destaque: row[8]?.trim().toLowerCase() === 'sim',
-        imageId,
-        image: imageUrl,
+        image: imageRef,
       };
     });
 
     allProducts.value = data;
   } catch (e) {
-    console.error('[CatalogView] getProducts failed', e);
+    console.error('[CatalogView] Error in getProducts:', e);
     showError.value = true;
     errorMessage.value = e.message || 'Erro desconhecido ao carregar produtos';
   } finally {
@@ -1958,17 +2013,9 @@ function onImageLoad(imageId) {
 }
 
 function onImageError(imageId) {
+  console.error(`[CatalogView] Image failed to load: ${imageId}`);
   imageLoadingState.value[imageId] = true;
   failedImages.value[imageId] = true;
-}
-
-function goHome() {
-  if (window.history.state?.back) {
-    router.back();
-    return;
-  }
-
-  router.push({ name: 'home' });
 }
 
 // Salvar nome no localStorage quando mudar

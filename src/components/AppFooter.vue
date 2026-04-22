@@ -11,13 +11,7 @@
       >
         Nossos Contatos
       </h3>
-      <div class="grid grid-cols-2 gap-4 w-full max-w-sm">
-        <ContactCard
-          name="Sarah"
-          phone="(11) 94775-8048"
-          :theme="theme"
-          @click="$emit('contact-click', 'sarah')"
-        />
+      <div class="flex justify-center w-full max-w-sm">
         <ContactCard
           name="Bruna"
           phone="(11) 97048-9098"
