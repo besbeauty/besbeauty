@@ -662,7 +662,7 @@
               />
 
               <img
-                :src="item.image"
+                :src="getProductImageUrl(item)"
                 alt=""
                 @load="onImageLoad(`carousel-${item.id}`)"
                 @error="onImageError(`carousel-${item.id}`)"
@@ -1278,7 +1278,7 @@ function sanitizeImageSource(value) {
 }
 
 function getProductImageUrl(item) {
-  // Se a imagem falhou ao carregar ou está vazia, retorna o logo
+  console.log('Getting image URL for item:', item.id);
   const imageId = sanitizeImageSource(item.image);
   if (
     !imageId ||
