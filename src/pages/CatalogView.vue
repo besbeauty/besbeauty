@@ -1278,7 +1278,6 @@ function sanitizeImageSource(value) {
 }
 
 function getProductImageUrl(item) {
-  console.log('Getting image URL for item:', item.id);
   const imageId = sanitizeImageSource(item.image);
   if (
     !imageId ||
@@ -1798,10 +1797,6 @@ async function getProducts() {
     async function getAvailableTabs(sheetId, apiKey) {
       const metadataUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?fields=sheets.properties.title&key=${apiKey}`;
       try {
-        console.log('[GoogleAPI] Sheets metadata request', {
-          endpoint: 'https://sheets.googleapis.com/v4/spreadsheets/{id}',
-          source: sheetId?.slice(0, 6) || 'unknown',
-        });
         const metadataResponse = await fetch(metadataUrl);
         if (!metadataResponse.ok) {
           return [];
@@ -1841,12 +1836,6 @@ async function getProducts() {
       }
 
       const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(TARGET_RANGE)}?key=${API_KEY}`;
-      console.log('[GoogleAPI] Sheets values request', {
-        endpoint:
-          'https://sheets.googleapis.com/v4/spreadsheets/{id}/values/{range}',
-        source: source.label,
-        range: TARGET_RANGE,
-      });
 
       const response = await fetch(url);
 
