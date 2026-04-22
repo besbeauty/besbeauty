@@ -1,56 +1,10 @@
 <template>
   <div class="w-full min-h-screen overflow-x-hidden">
-    <header
-      :class="theme === 'white' ? 'bg-[#f3f3f3]' : 'bg-[#0a0c10]'"
-      class="app-header w-full"
-    >
-      <div class="flex justify-between items-center px-6 py-4">
-        <!-- Logo -->
-        <img
-          :src="logoUrl"
-          alt="B&S Beauty Logo"
-          class="h-20 w-20 object-contain cursor-pointer transition-opacity hover:opacity-80"
-        />
-
-        <!-- Center Title -->
-        <div class="flex flex-col items-center leading-none">
-          <span
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-600'"
-            class="font-headline text-lg md:text-2xl lg:text-3xl tracking-wider uppercase"
-          >
-            B&S Beauty
-          </span>
-        </div>
-
-        <!-- Right Buttons -->
-        <div class="flex items-center gap-4">
-          <button
-            @click="$emit('open-catalog')"
-            :class="
-              theme === 'white'
-                ? 'bg-amber-100 text-amber-700'
-                : 'bg-pink-900/40 text-pink-300'
-            "
-            class="p-3 rounded-full shadow transition-colors"
-          >
-            <span class="material-symbols-outlined text-lg">collections</span>
-          </button>
-          <button
-            @click="toggleTheme"
-            :class="
-              theme === 'white'
-                ? 'bg-amber-100 text-amber-700'
-                : 'bg-pink-900/40 text-pink-300'
-            "
-            class="p-3 rounded-full shadow transition-colors"
-          >
-            <span class="material-symbols-outlined text-lg">{{
-              theme === 'white' ? 'light_mode' : 'dark_mode'
-            }}</span>
-          </button>
-        </div>
-      </div>
-    </header>
+    <AppHeader
+      title="B&S Beauty"
+      :show-catalog-btn="true"
+      @open-catalog="$emit('open-catalog')"
+    />
 
     <!-- Main Content -->
     <div class="w-full max-w-screen-xl px-8 mx-auto">
@@ -277,146 +231,7 @@
       </section>
     </div>
 
-    <!-- Footer -->
-    <footer
-      :class="theme === 'white' ? 'bg-[#f3f3f3]' : 'bg-[#0a0c10]'"
-      class="app-footer flex flex-col items-center gap-8"
-    >
-      <h3
-        :class="theme === 'white' ? 'text-amber-600' : 'text-pink-600'"
-        class="font-headline text-2xl tracking-wider uppercase"
-      >
-        Nossos Contatos
-      </h3>
-      <div class="grid grid-cols-2 gap-4 w-full max-w-sm">
-        <button
-          @click="openContactModal('sarah')"
-          class="flex flex-col items-center gap-2 p-3 rounded-lg cursor-pointer"
-          :class="
-            theme === 'white'
-              ? 'bg-white hover:bg-amber-50'
-              : 'bg-[#1a1f2a] hover:bg-pink-900/30'
-          "
-        >
-          <span
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-400'"
-            class="material-symbols-outlined"
-            >call</span
-          >
-          <p
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
-            class="text-xs font-semibold text-center"
-          >
-            Sarah
-          </p>
-          <p
-            :class="theme === 'white' ? 'text-amber-700' : 'text-pink-200'"
-            class="text-xs text-center"
-          >
-            (11) 94775-8048
-          </p>
-        </button>
-        <button
-          @click="openContactModal('bruna')"
-          class="flex flex-col items-center gap-2 p-3 rounded-lg cursor-pointer"
-          :class="
-            theme === 'white'
-              ? 'bg-white hover:bg-amber-50'
-              : 'bg-[#1a1f2a] hover:bg-pink-900/30'
-          "
-        >
-          <span
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-400'"
-            class="material-symbols-outlined"
-            >call</span
-          >
-          <p
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
-            class="text-xs font-semibold text-center"
-          >
-            Bruna
-          </p>
-          <p
-            :class="theme === 'white' ? 'text-amber-700' : 'text-pink-200'"
-            class="text-xs text-center"
-          >
-            (11) 97048-9098
-          </p>
-        </button>
-      </div>
-      <div class="flex flex-col items-center gap-3 w-full max-w-sm">
-        <h4
-          :class="theme === 'white' ? 'text-amber-600' : 'text-pink-400'"
-          class="text-sm font-semibold uppercase tracking-wider"
-        >
-          Redes Sociais
-        </h4>
-        <a
-          href="https://instagram.com/bes_loja"
-          target="_blank"
-          class="flex items-center gap-2 p-3 rounded-lg w-full justify-center"
-          :class="
-            theme === 'white'
-              ? 'bg-white hover:bg-amber-50'
-              : 'bg-[#1a1f2a] hover:bg-pink-900/30'
-          "
-        >
-          <span
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-400'"
-            class="material-symbols-outlined"
-            >people</span
-          >
-          <p
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
-            class="text-sm"
-          >
-            @bes_loja
-          </p>
-        </a>
-      </div>
-      <div class="flex flex-col items-center gap-3 w-full max-w-sm">
-        <h4
-          :class="theme === 'white' ? 'text-amber-600' : 'text-pink-400'"
-          class="text-sm font-semibold uppercase tracking-wider"
-        >
-          Atendemos em
-        </h4>
-        <div
-          class="flex items-center gap-2 p-3 rounded-lg w-full justify-center"
-          :class="theme === 'white' ? 'bg-white' : 'bg-[#1a1f2a]'"
-        >
-          <span
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-400'"
-            class="material-symbols-outlined"
-            >location_on</span
-          >
-          <p
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-300'"
-            class="text-sm"
-          >
-            São Paulo
-          </p>
-        </div>
-      </div>
-      <div
-        class="w-full h-[1px] max-w-screen-xl"
-        :class="theme === 'white' ? 'bg-gray-300' : 'bg-gray-700'"
-      ></div>
-      <div class="text-center space-y-2">
-        <p
-          :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
-          class="font-sans text-xs tracking-widest uppercase font-semibold"
-        >
-          2026 — Made by -A.
-        </p>
-        <p
-          :class="theme === 'white' ? 'text-gray-500' : 'text-gray-500'"
-          class="font-serif text-[11px] italic"
-        >
-          {{ randomMessage }}
-        </p>
-      </div>
-    </footer>
+    <AppFooter layout="home" @contact-click="openContactModal" />
 
     <!-- Contact Name Modal -->
     <div
@@ -487,65 +302,27 @@
 </template>
 
 <script setup>
-import { inject, computed, ref, watch, onMounted } from 'vue';
-import { Cloudinary } from '@cloudinary/url-gen';
-import { scale } from '@cloudinary/url-gen/actions/resize';
+import AppHeader from '../components/AppHeader.vue';
+import AppFooter from '../components/AppFooter.vue';
+import { useCloudinary } from '../composables/useCloudinary';
+import { useMessages } from '../composables/useMessages';
+import { useTheme } from '../composables/useTheme';
+
+import { computed, ref, watch, onMounted } from 'vue';
 
 const emit = defineEmits(['open-catalog']);
-const theme = inject('theme');
-const toggleTheme = inject('toggleTheme');
+const { buildImageUrl } = useCloudinary();
+const { randomMessage } = useMessages();
+const { theme, toggleTheme } = useTheme();
 
-// Messages for footer
-const messages = [
-  'Hey, bitches.',
-  'Miss me?',
-  'I see everything.',
-  'Secrets have a way of coming out.',
-  'You should be more careful.',
-  'Did you really think no one was watching?',
-  'Some secrets are meant to stay buried.',
-  'Tick tock.',
-  'The truth always finds a way.',
-  'Careful who you trust.',
-  'I know what you did.',
-  "You can't hide forever.",
-  'Every move you make... I see it.',
-  "Lying is easy. Getting away with it isn't.",
-  'Not everyone is who they seem.',
-  'Do you feel watched yet?',
-  'The game has already begun.',
-  "You're closer to the truth than you think.",
-  'But are you ready for it?',
-  "Some puzzles aren't meant to be solved.",
-  'Maybe the real question is... who is A?',
-  'XOXO.',
-];
 
-const randomMessage = ref('');
 
-function getRandomMessage() {
-  const index = Math.floor(Math.random() * messages.length);
-  return messages[index];
-}
 
-// Cloudinary setup
-const CLOUD_NAME = 'dsxdphuim';
-const cld = new Cloudinary({ cloud: { cloudName: CLOUD_NAME } });
-
-function buildImageUrl(publicId, width) {
-  return cld
-    .image(publicId)
-    .resize(scale().width(width))
-    .format('auto')
-    .quality('auto')
-    .toURL();
-}
 
 // Images srcset
 const imgWidths = [400, 600, 800, 1200];
 const imgSizes = '(max-width:768px) 100vw, 50vw';
 
-const logoUrl = computed(() => buildImageUrl('logo_crop_qoc5ff', 100));
 
 const cocoUrl = computed(() => buildImageUrl('coco_chanel_vo3pwc', 800));
 const cocoSrcset = computed(() =>

@@ -1,63 +1,11 @@
 <template>
   <div class="w-full min-h-screen overflow-x-hidden">
-    <header
-      class="app-header w-full"
-      :class="theme === 'white' ? 'bg-[#f3f3f3]' : 'bg-[#0a0c10]'"
-    >
-      <div class="flex justify-between items-center px-6 py-4">
-        <!-- Logo -->
-        <img
-          :src="logoUrl"
-          alt="B&S Beauty Logo"
-          class="h-20 w-20 object-contain cursor-pointer transition-opacity hover:opacity-80"
-          @click="$emit('back')"
-        />
-
-        <!-- Center Title -->
-        <div class="flex flex-col items-center leading-none">
-          <span
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-600'"
-            class="font-headline text-xs md:text-sm tracking-wider uppercase"
-          >
-            B&S Beauty
-          </span>
-          <span
-            :class="theme === 'white' ? 'text-amber-600' : 'text-pink-600'"
-            class="font-headline text-lg md:text-2xl lg:text-3xl tracking-wider uppercase"
-          >
-            Catálogo
-          </span>
-        </div>
-
-        <!-- Right Buttons -->
-        <div class="flex items-center gap-4">
-          <button
-            @click="$emit('back')"
-            class="p-3 rounded-full"
-            :class="
-              theme === 'white'
-                ? 'bg-amber-100 text-amber-700'
-                : 'bg-pink-900/40 text-pink-300'
-            "
-          >
-            <span class="material-symbols-outlined text-lg">arrow_back</span>
-          </button>
-          <button
-            @click="toggleTheme"
-            class="p-3 rounded-full"
-            :class="
-              theme === 'white'
-                ? 'bg-amber-100 text-amber-700'
-                : 'bg-pink-900/40 text-pink-300'
-            "
-          >
-            <span class="material-symbols-outlined text-lg">{{
-              theme === 'white' ? 'light_mode' : 'dark_mode'
-            }}</span>
-          </button>
-        </div>
-      </div>
-    </header>
+    <AppHeader
+      title="Catálogo"
+      subtitle
+      :show-back-btn="true"
+      @back="$emit('back')"
+    />
 
     <!-- Skeleton Loading LinkedIn style -->
     <div v-if="isLoadingProducts" class="mb-12 px-4 sm:px-8 lg:px-12 pb-6 pt-8">
@@ -1188,74 +1136,26 @@
       </div>
     </div>
 
-    <!-- Footer -->
-    <footer
-      :class="theme === 'white' ? 'bg-[#f3f3f3] border-t border-gray-300' : 'bg-[#0a0c10] border-t border-gray-700'"
-      class="app-footer flex flex-col items-center gap-8 w-full py-8 px-6"
-    >
-      <div
-        class="w-full h-[1px] max-w-screen-xl"
-        :class="theme === 'white' ? 'bg-gray-300' : 'bg-gray-700'"
-      ></div>
-      <div class="text-center space-y-2">
-        <p
-          :class="theme === 'white' ? 'text-gray-700' : 'text-gray-300'"
-          class="font-sans text-xs tracking-widest uppercase font-semibold"
-        >
-          2026 — Made by -A.
-        </p>
-        <p
-          :class="theme === 'white' ? 'text-gray-500' : 'text-gray-500'"
-          class="font-serif text-[11px] italic"
-        >
-          {{ randomMessage }}
-        </p>
-      </div>
-    </footer>
+    <AppFooter layout="simple" />
   </div>
 </template>
 
 <script setup>
+import AppHeader from '../components/AppHeader.vue';
+import AppFooter from '../components/AppFooter.vue';
+import { useCloudinary } from '../composables/useCloudinary';
+import { useMessages } from '../composables/useMessages';
+import { useTheme } from '../composables/useTheme';
+
 import { ref, inject, computed, onMounted, watch } from 'vue';
-import { Cloudinary } from '@cloudinary/url-gen';
-import { scale } from '@cloudinary/url-gen/actions/resize';
 
 const emit = defineEmits(['back']);
-const theme = inject('theme');
-const toggleTheme = inject('toggleTheme');
+const { buildImageUrl, logoUrl } = useCloudinary();
+const { randomMessage } = useMessages();
+const { theme, toggleTheme } = useTheme();
 
-// Messages for footer
-const messages = [
-  'Hey, bitches.',
-  'Miss me?',
-  'I see everything.',
-  'Secrets have a way of coming out.',
-  'You should be more careful.',
-  'Did you really think no one was watching?',
-  'Some secrets are meant to stay buried.',
-  'Tick tock.',
-  'The truth always finds a way.',
-  'Careful who you trust.',
-  'I know what you did.',
-  'You can\'t hide forever.',
-  'Every move you make... I see it.',
-  'Lying is easy. Getting away with it isn\'t.',
-  'Not everyone is who they seem.',
-  'Do you feel watched yet?',
-  'The game has already begun.',
-  'You\'re closer to the truth than you think.',
-  'But are you ready for it?',
-  'Some puzzles aren\'t meant to be solved.',
-  'Maybe the real question is... who is A?',
-  'XOXO.',
-];
 
-const randomMessage = ref('');
 
-function getRandomMessage() {
-  const index = Math.floor(Math.random() * messages.length);
-  return messages[index];
-}
 
 // All products data
 const allProducts = ref([]);
@@ -1357,22 +1257,7 @@ function clearFilters() {
   filterML.value = '';
 }
 
-// Cloudinary setup
-const CLOUD_NAME = 'dsxdphuim';
-const cld = new Cloudinary({ cloud: { cloudName: CLOUD_NAME } });
 
-function buildImageUrl(publicId, width) {
-  // A biblioteca Cloudinary já faz o encoding, não fazer double-encoding
-  const url = cld
-    .image(publicId)
-    .resize(scale().width(width))
-    .format('auto')
-    .quality('auto')
-    .toURL();
-  return url;
-}
-
-const logoUrl = computed(() => buildImageUrl('logo_crop_qoc5ff', 100));
 
 function getProductImageUrl(item) {
   // Se a imagem falhou ao carregar, retorna o fallback
