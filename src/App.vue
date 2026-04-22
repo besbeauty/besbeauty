@@ -1,16 +1,13 @@
 <template>
   <div :class="rootClass">
-    <HomeView v-if="view === 'home'" @open-catalog="view = 'catalog'" />
-    <CatalogView v-else @back="view = 'home'" />
+    <RouterView />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, provide, watch } from 'vue';
-import HomeView from './pages/HomeView.vue';
-import CatalogView from './pages/CatalogView.vue';
+import { computed, provide, watch, ref } from 'vue';
+import { RouterView } from 'vue-router';
 
-const view = ref('home');
 const theme = ref('white'); // default
 function toggleTheme() {
   theme.value = theme.value === 'black' ? 'white' : 'black';

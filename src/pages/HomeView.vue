@@ -3,7 +3,7 @@
     <AppHeader
       title="B&S Beauty"
       :show-catalog-btn="true"
-      @open-catalog="$emit('open-catalog')"
+      @open-catalog="openCatalog"
     />
 
     <!-- Main Content -->
@@ -25,7 +25,7 @@
             </p>
             <div class="flex flex-wrap gap-4">
               <button
-                @click="$emit('open-catalog')"
+                @click="openCatalog"
                 :class="
                   theme === 'white'
                     ? 'bg-amber-200 text-amber-900'
@@ -307,13 +307,14 @@ import AppFooter from '../components/AppFooter.vue';
 import { useCloudinary } from '../composables/useCloudinary';
 import { useMessages } from '../composables/useMessages';
 import { useTheme } from '../composables/useTheme';
+import { useRouter } from 'vue-router';
 
 import { computed, ref, watch, onMounted } from 'vue';
 
-const emit = defineEmits(['open-catalog']);
 const { buildImageUrl } = useCloudinary();
 const { randomMessage, getRandomMessage } = useMessages();
 const { theme, toggleTheme } = useTheme();
+const router = useRouter();
 
 // Images srcset
 const imgWidths = [400, 600, 800, 1200];
@@ -445,5 +446,9 @@ function sendContactMessage() {
 function closeContactModal() {
   showContactNameModal.value = false;
   contactNameError.value = '';
+}
+
+function openCatalog() {
+  router.push({ name: 'catalog' });
 }
 </script>

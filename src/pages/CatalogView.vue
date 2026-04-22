@@ -4,11 +4,14 @@
       title="Catálogo"
       subtitle
       :show-back-btn="true"
-      @back="$emit('back')"
+      @back="goHome"
     />
 
     <!-- Skeleton Loading LinkedIn style -->
-    <div v-if="isLoadingProducts" class="mb-12 px-4 sm:px-8 lg:px-12 pb-6 pt-8">
+    <div
+      v-if="isLoadingProducts"
+      class="mb-12 pb-6 pt-8 px-[5%] flex flex-col items-center"
+    >
       <div
         :class="
           theme === 'white'
@@ -18,73 +21,43 @@
         class="h-8 w-40 rounded mx-auto mb-6 animate-pulse"
       />
 
-      <div class="relative">
-        <div class="flex gap-4 overflow-x-auto py-4 px-4">
-          <div v-for="i in 4" :key="`skeleton-${i}`" class="flex-shrink-0">
-            <div
-              :class="
-                (theme === 'white'
-                  ? 'bg-gradient-to-br from-amber-50 to-amber-100'
-                  : 'bg-gradient-to-br from-pink-900/20 to-pink-800/30') +
-                ' rounded-xl shadow-lg overflow-hidden w-auto min-w-48 flex flex-col'
-              "
-            >
-              <!-- Skeleton Image -->
+      <div class="flex items-center justify-center gap-4 w-full">
+        <div class="w-8 h-8 flex-shrink-0" />
+
+        <div class="w-[70%]">
+          <div
+            class="flex w-fit max-w-full mx-auto gap-4 overflow-x-auto py-4 px-2 scrollbar-thin"
+            :class="
+              theme === 'white' ? 'scrollbar-amber-300' : 'scrollbar-pink-500'
+            "
+          >
+            <div v-for="i in 4" :key="`skeleton-${i}`" class="flex-shrink-0">
               <div
                 :class="
-                  theme === 'white'
-                    ? 'bg-gradient-to-r from-amber-200 to-amber-100'
-                    : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                  (theme === 'white'
+                    ? 'bg-gradient-to-br from-amber-50 to-amber-100'
+                    : 'bg-gradient-to-br from-pink-900/20 to-pink-800/30') +
+                  ' rounded-xl shadow-lg overflow-hidden w-auto min-w-48 flex flex-col'
                 "
-                class="w-full h-40 animate-pulse"
-              />
+              >
+                <div
+                  :class="
+                    theme === 'white'
+                      ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                      : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                  "
+                  class="w-full h-40 animate-pulse"
+                />
 
-              <!-- Skeleton Content -->
-              <div class="flex-1 p-4 flex flex-col justify-between">
-                <div class="space-y-3">
-                  <div
-                    :class="
-                      theme === 'white'
-                        ? 'bg-gradient-to-r from-amber-200 to-amber-100'
-                        : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
-                    "
-                    class="h-4 w-3/4 rounded animate-pulse"
-                  />
-                  <div
-                    :class="
-                      theme === 'white'
-                        ? 'bg-gradient-to-r from-amber-200 to-amber-100'
-                        : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
-                    "
-                    class="h-3 w-1/2 rounded animate-pulse"
-                  />
-                  <div
-                    :class="
-                      theme === 'white'
-                        ? 'bg-gradient-to-r from-amber-200 to-amber-100'
-                        : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
-                    "
-                    class="h-3 w-2/3 rounded animate-pulse"
-                  />
-                </div>
-
-                <div class="flex items-end justify-between mt-4">
-                  <div
-                    :class="
-                      theme === 'white'
-                        ? 'bg-gradient-to-r from-amber-200 to-amber-100'
-                        : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
-                    "
-                    class="h-6 w-20 rounded animate-pulse"
-                  />
-                  <div class="flex gap-1">
+                <div class="flex-1 p-4 flex flex-col justify-between">
+                  <div class="space-y-3">
                     <div
                       :class="
                         theme === 'white'
                           ? 'bg-gradient-to-r from-amber-200 to-amber-100'
                           : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
                       "
-                      class="h-8 w-8 rounded animate-pulse"
+                      class="h-4 w-3/4 rounded animate-pulse"
                     />
                     <div
                       :class="
@@ -92,14 +65,53 @@
                           ? 'bg-gradient-to-r from-amber-200 to-amber-100'
                           : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
                       "
-                      class="h-8 w-8 rounded animate-pulse"
+                      class="h-3 w-1/2 rounded animate-pulse"
                     />
+                    <div
+                      :class="
+                        theme === 'white'
+                          ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                          : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                      "
+                      class="h-3 w-2/3 rounded animate-pulse"
+                    />
+                  </div>
+
+                  <div class="flex items-end justify-between mt-4">
+                    <div
+                      :class="
+                        theme === 'white'
+                          ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                          : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                      "
+                      class="h-6 w-20 rounded animate-pulse"
+                    />
+                    <div class="flex gap-1">
+                      <div
+                        :class="
+                          theme === 'white'
+                            ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                            : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                        "
+                        class="h-8 w-8 rounded animate-pulse"
+                      />
+                      <div
+                        :class="
+                          theme === 'white'
+                            ? 'bg-gradient-to-r from-amber-200 to-amber-100'
+                            : 'bg-gradient-to-r from-pink-800/30 to-pink-700/20'
+                        "
+                        class="h-8 w-8 rounded animate-pulse"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <div class="w-8 h-8 flex-shrink-0" />
       </div>
     </div>
 
@@ -170,27 +182,17 @@
                   <!-- Skeleton -->
                   <div
                     v-if="!imageLoadingState[item.id]"
-                    class="absolute inset-0 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 animate-pulse"
+                    class="w-full h-full bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 animate-pulse"
                   />
 
                   <img
-                    v-if="item.image?.trim()"
-                    :src="getProductImageUrl(item)"
+                    :data-src="getProductImageUrl(item)"
                     alt="Perfume"
                     @load="onImageLoad(item.id)"
                     @error="onImageError(item.id)"
-                    class="w-full h-full object-cover relative z-10"
+                    class="w-full h-full object-cover relative z-10 lazy-load-img"
                   />
-                  <div v-else class="text-center px-4 relative z-10">
-                    <p
-                      :class="
-                        theme === 'white' ? 'text-gray-500' : 'text-gray-400'
-                      "
-                      class="text-sm font-medium"
-                    >
-                      Imagem será disponibilizada em breve
-                    </p>
-                  </div>
+
                 </div>
                 <!-- Info + Details button -->
                 <div class="flex-1 p-4 flex flex-col justify-between relative">
@@ -678,7 +680,7 @@
               />
 
               <img
-                :src="item.image"
+                :src="getProductImageUrl(item)"
                 alt=""
                 @load="onImageLoad(`carousel-${item.id}`)"
                 @error="onImageError(`carousel-${item.id}`)"
@@ -1146,13 +1148,17 @@ import AppFooter from '../components/AppFooter.vue';
 import { useCloudinary } from '../composables/useCloudinary';
 import { useMessages } from '../composables/useMessages';
 import { useTheme } from '../composables/useTheme';
+import { useRouter } from 'vue-router';
 
-import { ref, inject, computed, onMounted, watch } from 'vue';
+import { ref, inject, computed, onMounted, watch, onUpdated, nextTick } from 'vue';
+import { useLazyLoad } from '../composables/useLazyLoad';
 
-const emit = defineEmits(['back']);
 const { buildImageUrl, logoUrl } = useCloudinary();
 const { randomMessage, getRandomMessage } = useMessages();
 const { theme, toggleTheme } = useTheme();
+const { observe } = useLazyLoad();
+const router = useRouter();
+const FALLBACK_IMAGE_ID = 'logo_crop_qoc5ff';
 
 // All products data
 const allProducts = ref([]);
@@ -1255,16 +1261,18 @@ function clearFilters() {
 }
 
 function getProductImageUrl(item) {
-  // Se a imagem falhou ao carregar, retorna o fallback
+  // Se a imagem falhou ao carregar ou está vazia, retorna o logo
+  const imageId = item?.imageId?.trim();
   if (
-    failedImages.value[item.id] ||
-    failedImages.value[`carousel-${item.id}`] ||
-    failedImages.value[`detail-${item.id}`] ||
-    failedImages.value[`cart-${item.id}`]
+    !imageId ||
+    failedImages.value[item?.id] ||
+    failedImages.value[`carousel-${item?.id}`] ||
+    failedImages.value[`detail-${item?.id}`] ||
+    failedImages.value[`cart-${item?.id}`]
   ) {
-    return buildImageUrl('logo_crop_qoc5ff', 300);
+    return buildImageUrl(FALLBACK_IMAGE_ID, 300);
   }
-  return item.image;
+  return buildImageUrl(imageId, 300);
 }
 
 function isNumericPrice(price) {
@@ -1739,7 +1747,8 @@ async function getProducts() {
     }
 
     const data = rows.slice(1).map((row, i) => {
-      const rawImageId = row[9]?.trim() || 'logo_crop_qoc5ff';
+      const rawImageId = row[9]?.trim();
+      const imageId = rawImageId || FALLBACK_IMAGE_ID;
       const priceRaw = row[6]?.toString().trim() || '';
       const normalized = priceRaw.toLowerCase();
       const numericCandidate = priceRaw
@@ -1750,7 +1759,7 @@ async function getProducts() {
       const parsed = Number.parseFloat(numericCandidate);
       const hasNumericPrice = Number.isFinite(parsed);
 
-      const imageUrl = buildImageUrl(rawImageId, 300);
+      const imageUrl = buildImageUrl(imageId, 300);
       return {
         id: i,
         tipo: row[0]?.trim() || 'Sem tipo',
@@ -1764,6 +1773,7 @@ async function getProducts() {
         sobConsulta: !priceRaw || normalized === 'sob consulta',
         quantidade: parseInt(row[7]) || 0,
         destaque: row[8]?.trim().toLowerCase() === 'sim',
+        imageId,
         image: imageUrl,
       };
     });
@@ -1800,6 +1810,18 @@ onMounted(() => {
   randomMessage.value = getRandomMessage();
 });
 
+// Set up lazy loading for product images
+onUpdated(() => {
+  nextTick(() => {
+    document.querySelectorAll('img.lazy-load-img').forEach((img) => {
+      if (img && !img.hasAttribute('data-observed')) {
+        observe(img);
+        img.setAttribute('data-observed', 'true');
+      }
+    });
+  });
+});
+
 // Initialize scroll positions when products load
 watch(allProducts, () => {
   setTimeout(() => {
@@ -1819,6 +1841,15 @@ function onImageError(imageId) {
   console.error(`[CatalogView] Image failed to load: ${imageId}`);
   imageLoadingState.value[imageId] = true;
   failedImages.value[imageId] = true;
+}
+
+function goHome() {
+  if (window.history.state?.back) {
+    router.back();
+    return;
+  }
+
+  router.push({ name: 'home' });
 }
 
 // Salvar nome no localStorage quando mudar
