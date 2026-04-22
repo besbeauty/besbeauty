@@ -1,10 +1,6 @@
 <template>
   <footer
-    :class="
-      theme === 'white'
-        ? 'bg-[#f3f3f3]'
-        : 'bg-[#0a0c10]'
-    "
+    :class="theme === 'white' ? 'bg-[#f3f3f3]' : 'bg-[#0a0c10]'"
     class="app-footer flex flex-col items-center gap-8 w-full py-8 px-6"
   >
     <!-- Home layout with contacts -->

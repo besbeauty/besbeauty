@@ -312,17 +312,12 @@ import { computed, ref, watch, onMounted } from 'vue';
 
 const emit = defineEmits(['open-catalog']);
 const { buildImageUrl } = useCloudinary();
-const { randomMessage } = useMessages();
+const { randomMessage, getRandomMessage } = useMessages();
 const { theme, toggleTheme } = useTheme();
-
-
-
-
 
 // Images srcset
 const imgWidths = [400, 600, 800, 1200];
 const imgSizes = '(max-width:768px) 100vw, 50vw';
-
 
 const cocoUrl = computed(() => buildImageUrl('coco_chanel_vo3pwc', 800));
 const cocoSrcset = computed(() =>
@@ -385,12 +380,12 @@ const selectedVendor = ref(null);
 
 // Load name from localStorage on mount
 onMounted(() => {
+  console.log('[HomeView] onMounted');
   const savedName = localStorage.getItem('contactUserName');
   if (savedName) {
     contactName.value = savedName;
   }
-  // Set random message on mount
-  randomMessage.value = getRandomMessage();
+  console.log('[HomeView] randomMessage:', randomMessage.value);
 });
 
 // Save name to localStorage when it changes

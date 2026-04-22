@@ -1,6 +1,7 @@
 {
   "name": "load-page-vue",
   "version": "0.0.1",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -19,6 +20,9 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.10",
+    "tailwindcss": "^3.4.19",
     "vite": "^4.0.0"
   }
 }

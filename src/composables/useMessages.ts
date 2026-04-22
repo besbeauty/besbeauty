@@ -25,7 +25,9 @@ const messages = [
   'XOXO.',
 ];
 
+// Global randomMessage - shared across all useMessages() calls
 const randomMessage = ref('');
+let initialized = false;
 
 function getRandomMessage() {
   const index = Math.floor(Math.random() * messages.length);
@@ -33,9 +35,12 @@ function getRandomMessage() {
 }
 
 export function useMessages() {
-  onMounted(() => {
+  // Initialize only once
+  if (!initialized) {
+    console.log('[useMessages] Initializing random message');
     randomMessage.value = getRandomMessage();
-  });
+    initialized = true;
+  }
 
   return {
     randomMessage,

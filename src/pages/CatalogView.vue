@@ -1151,11 +1151,8 @@ import { ref, inject, computed, onMounted, watch } from 'vue';
 
 const emit = defineEmits(['back']);
 const { buildImageUrl, logoUrl } = useCloudinary();
-const { randomMessage } = useMessages();
+const { randomMessage, getRandomMessage } = useMessages();
 const { theme, toggleTheme } = useTheme();
-
-
-
 
 // All products data
 const allProducts = ref([]);
@@ -1257,11 +1254,14 @@ function clearFilters() {
   filterML.value = '';
 }
 
-
-
 function getProductImageUrl(item) {
   // Se a imagem falhou ao carregar, retorna o fallback
-  if (failedImages.value[item.id] || failedImages.value[`carousel-${item.id}`] || failedImages.value[`detail-${item.id}`] || failedImages.value[`cart-${item.id}`]) {
+  if (
+    failedImages.value[item.id] ||
+    failedImages.value[`carousel-${item.id}`] ||
+    failedImages.value[`detail-${item.id}`] ||
+    failedImages.value[`cart-${item.id}`]
+  ) {
     return buildImageUrl('logo_crop_qoc5ff', 300);
   }
   return item.image;
@@ -1673,29 +1673,61 @@ function endDrag() {
 
 async function getProducts() {
   try {
+    console.log('[CatalogView] Starting getProducts...');
+
     // Em desenvolvimento: usa import.meta.env
     // Em produção (GitHub Pages): usa as constantes globais injetadas pelo Vite
-    const SHEET_ID = import.meta.env.VITE_SHEET_ID || (typeof __VITE_SHEET_ID__ !== 'undefined' ? __VITE_SHEET_ID__ : '');
-    const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || (typeof __VITE_GOOGLE_API_KEY__ !== 'undefined' ? __VITE_GOOGLE_API_KEY__ : '');
+    const SHEET_ID =
+      import.meta.env.VITE_SHEET_ID ||
+      (typeof __VITE_SHEET_ID__ !== 'undefined' ? __VITE_SHEET_ID__ : '');
+    const API_KEY =
+      import.meta.env.VITE_GOOGLE_API_KEY ||
+      (typeof __VITE_GOOGLE_API_KEY__ !== 'undefined'
+        ? __VITE_GOOGLE_API_KEY__
+        : '');
+
+    console.log(
+      '[CatalogView] SHEET_ID:',
+      SHEET_ID ? 'configured' : 'NOT CONFIGURED',
+    );
+    console.log(
+      '[CatalogView] API_KEY:',
+      API_KEY ? 'configured' : 'NOT CONFIGURED',
+    );
 
     if (!SHEET_ID || SHEET_ID === 'undefined' || SHEET_ID === '') {
-      throw new Error('SHEET_ID não configurado. Verifique seu .env.local (desenvolvimento) ou configure VITE_SHEET_ID nos Secrets do GitHub.');
+      throw new Error(
+        'SHEET_ID não configurado. Verifique seu .env.local (desenvolvimento) ou configure VITE_SHEET_ID nos Secrets do GitHub.',
+      );
     }
 
-    if (!API_KEY || API_KEY === 'YOUR_PUBLIC_API_KEY_HERE' || API_KEY === 'YOUR_API_KEY_HERE' || API_KEY === 'undefined' || API_KEY === '') {
+    if (
+      !API_KEY ||
+      API_KEY === 'YOUR_PUBLIC_API_KEY_HERE' ||
+      API_KEY === 'YOUR_API_KEY_HERE' ||
+      API_KEY === 'undefined' ||
+      API_KEY === ''
+    ) {
       throw new Error(
         'Google API Key não configurada. Configure VITE_GOOGLE_API_KEY nos Secrets do GitHub ou adicione ao .env.local para desenvolvimento.',
       );
     }
 
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Dados!A:J?key=${API_KEY}`;
+    console.log('[CatalogView] Fetching from:', url.substring(0, 50) + '...');
+
     const response = await fetch(url);
+    console.log('[CatalogView] Response status:', response.status);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const sheetData = await response.json();
+    console.log(
+      '[CatalogView] Sheet data received, rows:',
+      sheetData.values?.length || 0,
+    );
 
     if (sheetData.error) {
       throw new Error(`API Error: ${sheetData.error.message}`);
@@ -1718,6 +1750,7 @@ async function getProducts() {
       const parsed = Number.parseFloat(numericCandidate);
       const hasNumericPrice = Number.isFinite(parsed);
 
+      const imageUrl = buildImageUrl(rawImageId, 300);
       return {
         id: i,
         tipo: row[0]?.trim() || 'Sem tipo',
@@ -1731,12 +1764,18 @@ async function getProducts() {
         sobConsulta: !priceRaw || normalized === 'sob consulta',
         quantidade: parseInt(row[7]) || 0,
         destaque: row[8]?.trim().toLowerCase() === 'sim',
-        image: buildImageUrl(rawImageId, 300),
+        image: imageUrl,
       };
     });
 
+    console.log(
+      '[CatalogView] Products loaded successfully:',
+      data.length,
+      'items',
+    );
     allProducts.value = data;
   } catch (e) {
+    console.error('[CatalogView] Error in getProducts:', e);
     showError.value = true;
     errorMessage.value = e.message || 'Erro desconhecido ao carregar produtos';
   } finally {
@@ -1772,10 +1811,12 @@ watch(allProducts, () => {
 
 // Rastrear carregamento de imagens
 function onImageLoad(imageId) {
+  console.log(`[CatalogView] Image loaded: ${imageId}`);
   imageLoadingState.value[imageId] = true;
 }
 
 function onImageError(imageId) {
+  console.error(`[CatalogView] Image failed to load: ${imageId}`);
   imageLoadingState.value[imageId] = true;
   failedImages.value[imageId] = true;
 }

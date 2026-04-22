@@ -77,24 +77,24 @@
 import { useTheme } from '../composables/useTheme';
 import { useCloudinary } from '../composables/useCloudinary';
 
-defineProps<{
+const props = defineProps<{
   title: string;
   subtitle?: boolean;
   showCatalogBtn?: boolean;
   showBackBtn?: boolean;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   'open-catalog': [];
-  'back': [];
+  back: [];
 }>();
 
 const { theme, toggleTheme } = useTheme();
 const { logoUrl } = useCloudinary();
 
 function handleLogoClick() {
-  if (this.$props.showBackBtn) {
-    this.$emit('back');
+  if (props.showBackBtn) {
+    emit('back');
   }
 }
 </script>

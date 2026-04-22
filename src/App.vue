@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { ref, computed, provide } from 'vue';
+import { ref, computed, provide, watch } from 'vue';
 import HomeView from './pages/HomeView.vue';
 import CatalogView from './pages/CatalogView.vue';
 
@@ -17,6 +17,19 @@ function toggleTheme() {
 }
 provide('theme', theme);
 provide('toggleTheme', toggleTheme);
+
+// Update HTML root class for Tailwind dark mode
+watch(
+  theme,
+  (newTheme) => {
+    if (newTheme === 'black') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  },
+  { immediate: true },
+);
 
 const rootClass = computed(() =>
   theme.value === 'white'
