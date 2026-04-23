@@ -330,7 +330,7 @@
           :class="theme === 'white' ? 'text-gray-600' : 'text-gray-400'"
           class="mb-6"
         >
-          {{ errorMessage || 'Não conseguimos carregar os produtos.' }}
+          Ocorreu um erro inesperado.
         </p>
         <button
           @click="showError = false"
@@ -1179,7 +1179,6 @@ const showFilters = ref(false);
 const showError = ref(false);
 const isLoadingProducts = ref(true);
 const infoMessageFading = ref(false);
-const errorMessage = ref('');
 const searchQuery = ref('');
 const priceMin = ref(0);
 const priceMax = ref(500);
@@ -1952,7 +1951,6 @@ async function getProducts() {
   } catch (e) {
     console.error('[CatalogView] Error in getProducts:', e);
     showError.value = true;
-    errorMessage.value = e.message || 'Erro desconhecido ao carregar produtos';
   } finally {
     isLoadingProducts.value = false;
   }
