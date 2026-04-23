@@ -32,11 +32,6 @@ export function useGeocoding() {
       const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${apiKey}`;
       const safeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=REDACTED`;
 
-      console.log('[GoogleAPI] Geocoding request', {
-        endpoint: 'https://maps.googleapis.com/maps/api/geocode/json',
-        url: safeUrl,
-      });
-
       const response = await fetch(url);
       const data = await response.json();
 

@@ -1204,7 +1204,7 @@ const cartQuantities = ref({});
 const cartItems = ref([]);
 const imageLoadingState = ref({});
 const failedImages = ref({});
-const SELLER_PHONES = ['5511947758048', '5511970489098'];
+const SELLER_PHONES = ['5511970489098'];
 const CONTACT_COMPLIMENTS = [
   'Ta muito lindo!',
   'O site ficou maravilhoso!',

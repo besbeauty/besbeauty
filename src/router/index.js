@@ -4,6 +4,8 @@ import CatalogView from '../pages/CatalogView.vue';
 import SellerLoginView from '../pages/SellerLoginView.vue';
 import SellerPanelView from '../pages/SellerPanelView.vue';
 
+const sellerAreaEnabled = import.meta.env.VITE_ENABLE_SELLER_AREA === 'true';
+
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
@@ -21,12 +23,24 @@ const router = createRouter({
       path: '/seller-login',
       name: 'seller-login',
       component: SellerLoginView,
+      beforeEnter: (to, from, next) => {
+        if (sellerAreaEnabled) {
+          next();
+        } else {
+          next({ name: 'home' });
+        }
+      },
     },
     {
       path: '/seller-panel',
       name: 'seller-panel',
       component: SellerPanelView,
       beforeEnter: (to, from, next) => {
+        if (!sellerAreaEnabled) {
+          next({ name: 'home' });
+          return;
+        }
+
         const isAuthenticated = sessionStorage.getItem('sellerAuth') === 'true';
 
         if (isAuthenticated) {

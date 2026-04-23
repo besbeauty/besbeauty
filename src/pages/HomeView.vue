@@ -3,7 +3,7 @@
     <AppHeader
       title="B&S Beauty"
       :show-catalog-btn="true"
-      :show-seller-btn="true"
+      :show-seller-btn="sellerAreaEnabled"
       @open-catalog="openCatalog"
       @open-seller="openSellerArea"
     />
@@ -279,6 +279,7 @@ const { buildImageUrl } = useCloudinary();
 const { randomMessage, getRandomMessage } = useMessages();
 const { theme, toggleTheme } = useTheme();
 const router = useRouter();
+const sellerAreaEnabled = import.meta.env.VITE_ENABLE_SELLER_AREA === 'true';
 const showConfigError = ref(false);
 const configErrorMessage = ref('');
 
@@ -735,6 +736,11 @@ function openCatalog() {
 }
 
 function openSellerArea() {
+  if (!sellerAreaEnabled) {
+    router.push({ name: 'home' });
+    return;
+  }
+
   router.push({ name: 'seller-login' });
 }
 
